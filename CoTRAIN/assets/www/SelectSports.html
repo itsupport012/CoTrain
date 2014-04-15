@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jQuery Mobile: Theme Download</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!-- DataBaseService Url -->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+
+</head>
+<style>
+#map-canvas {
+	position: absolute;
+	width: 96%;
+	height: 90%;
+	left: 2.5%;
+}
+#searchLoc{
+	text-align:left;
+	
+	
+}
+</style>
+<body>
+<div data-role="page" data-theme="a" id="SportsPage" data-dom-cache="true">
+  <div data-role="header" data-position="fixed" > <a href="javascript:location.replace('./MySports.html');" data-transition="fade" data-inline="true" class="backButton"><img src="themes/images/back.png" /></a>
+    <h1>EDIT SPORTS</h1>
+    <a class="saveButton" onClick="saveDetails()"><img src="themes/images/SaveIcon.png" /></a> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <div class="message">
+        <p><Span id="userName"> </Span>How do you train?</p>
+      </div>
+      <!-- ***************** Run *****************************-->
+      <fieldset id="run" class="ui-grid-a">
+        <div class="ui-block-a"><a href="#" data-inline="true"><img src="themes/images/running_sel.png"/></a></div>
+        <div class="ui-block-b" >
+          <div class="activityDetails">
+            <p>
+            <ul class="circles" id="run_select">
+              <li class="circleGray" id="run_beg"></li>
+              <li class="circleGray" id="run_intr"></li>
+              <li class="circleGray" id="run_adv"></li>
+              <li class="circleGray" id="run_prof"></li>
+            </ul>
+            </p>
+            <br/>
+            <p id="run_type">Training Level</p>
+            <p><img src="themes/images/map_Arrow.png"/></p>
+            <p id="run_mapSelect">Select Location</p>
+          </div>
+        </div>
+      </fieldset>
+      <!-- ***************** Workout *****************************-->
+      <fieldset id="workout" class="ui-grid-a">
+        <div class="ui-block-a"><a href="#" data-inline="true"  ><img src="themes/images/workout_sel.png" /></a></div>
+        <div class="ui-block-b" >
+          <div class="activityDetails">
+            <p>
+            <ul class="circles" id="work_select">
+              <li class="circleGray" id="work_beg"></li>
+              <li class="circleGray" id="work_intr"></li>
+              <li class="circleGray" id="work_adv"></li>
+              <li class="circleGray" id="work_prof"></li>
+            </ul>
+            </p>
+            <br/>
+            <p id="work_type">Training Level</p>
+            <p><img src="themes/images/map_Arrow.png"/></p>
+            <p id="work_mapSelect">Select Location</p>
+          </div>
+        </div>
+      </fieldset>
+      <!-- ***************** cycling *****************************-->
+      <fieldset id="cycle" class="ui-grid-a">
+        <div class="ui-block-a"><a href="#" data-inline="true" ><img src="themes/images/cycling_sel.png" /></a></div>
+        <div class="ui-block-b" >
+          <div class="activityDetails">
+            <p>
+            <ul class="circles" id="cyl_select">
+              <li class="circleGray" id="cyl_beg"></li>
+              <li class="circleGray" id="cyl_intr"></li>
+              <li class="circleGray" id="cyl_adv"></li>
+              <li class="circleGray" id="cyl_prof"></li>
+            </ul>
+            </p>
+            <br/>
+            <p id="cyl_type">Training Level</p>
+            <p><img src="themes/images/map_Arrow.png"/></p>
+            <p id="cyl_mapSelect">Select Location</p>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</div>
+<!-- ***************** Map Page ***************** -->
+<div data-role="page" data-theme="a" id="mapPage" data-dom-cache="true">
+  <div data-role="header" data-position="fixed">
+    <h1>MAP</h1>
+    <a  class="backButton" onClick="goback()"><img src="themes/images/back.png" /></a> <a href="#" data-transition="slide" data-inline="true" class="saveButton" onClick="showAddress()"><img src="themes/images/SaveIcon.png" /></a> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <input type="search" name="search" id="searchLoc" value="" placeholder="Where do you train?" class="controls" />
+    </div>
+    <div id="map-canvas"> 
+      <!-- map loads here... --> 
+    </div>
+  </div>
+</div>
+<script>
+var run_id;
+var work_id;
+var cyl_id;
+var run_level;
+var work_level;
+var cyl_level;
+
+var sportsConfigArr = new Array();
+var sport_sel;
+var address;
+var sportArr = new Array();
+var latlongArr = new Array();
+
+	
+$(function()
+{
+	$('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+			//********************	Sports array already configured*********************//
+	sportsDetailsArr = JSON.parse(window.localStorage.getItem("SportsDetailsArr"));
+	
+	for(var i=0;i<sportsDetailsArr.length;i++)
+	{
+		sportArr = sportsDetailsArr;
+		sportConfig(sportsDetailsArr[i].SportID,sportsDetailsArr[i].SportLevelID,sportsDetailsArr[i].Location)
+	}
+
+});
+	//********************	Config the sports *********************//
+function sportConfig(spt_Id,spt_Lvl,spt_Loc)
+{
+	switch(spt_Id)
+	{
+		case 2:
+			{
+				if(spt_Lvl == 1)
+				{
+					selectRun('run_beg');
+				}
+				else if(spt_Lvl == 2)
+				{
+					selectRun('run_intr');
+				}else if(spt_Lvl == 3)
+				{
+					selectRun('run_adv');
+				}
+				else if(spt_Lvl == 4)
+				{
+					selectRun('run_prof');
+				}
+				if(spt_Loc != '')
+				{
+					$("#run_mapSelect").text(spt_Loc);
+				}
+			}
+			break;
+		case 3:
+			{
+				if(spt_Lvl == 1)
+				{
+					selectWork('work_beg');
+				}
+				else if(spt_Lvl == 2)
+				{
+					selectWork('work_intr');
+				}else if(spt_Lvl == 3)
+				{
+					selectWork('work_adv');
+				}
+				else if(spt_Lvl == 4)
+				{
+					selectWork('work_prof');
+				}
+				if(spt_Loc != '')
+				{
+					$("#work_mapSelect").text(spt_Loc);
+				}
+				
+			}
+			break;
+		case 5:
+			{
+				if(spt_Lvl == 1)
+				{
+					selectCycle('cyl_beg');
+				}
+				else if(spt_Lvl == 2)
+				{
+					selectCycle('cyl_intr');
+				}else if(spt_Lvl == 3)
+				{
+					selectCycle('cyl_adv');
+				}
+				else if(spt_Lvl == 4)
+				{
+					selectCycle('cyl_prof');
+				}
+				if(spt_Loc != '')
+				{
+					$("#cyl_mapSelect").text(spt_Loc);
+				}
+				
+			}
+			break;
+	}
+}
+$("#run_select").click(function(event){
+			run_id=2;
+			var r = event.target.id;
+			run_level=selectRun(r);
+			
+});
+function selectRun(e)
+{
+		switch(e)
+		{
+			case "run_beg":
+			{
+				i=1;
+				$("#run_type").empty();
+				$("#run_beg,#run_intr,#run_adv,#run_prof").css( {"background":"gray","color":"gray"  });
+				$("#run_type").append('Beginner');
+				$("#run_beg").css( {"background":"red","color":"red" });
+			}
+			break;
+			case "run_intr":{
+				i=2;
+				$("#run_type").empty();
+				$("#run_beg,#run_intr,#run_adv,#run_prof").css( {"background":"gray","color":"gray"  });
+				$("#run_type").append('Intermediate');
+				$("#run_beg,#run_intr").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "run_adv":{
+				i=3;
+				$("#run_type").empty();
+				$("#run_beg,#run_intr,#run_adv,#run_prof").css( {"background":"gray","color":"gray"  });
+				$("#run_type").append('Advanced');
+				$("#run_beg,#run_intr,#run_adv").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "run_prof":{
+				i=4;
+				$("#run_type").empty();
+				$("#run_beg,#run_intr,#run_adv,#run_prof").css( {"background":"gray","color":"gray"  });
+				$("#run_type").append('Professional');
+				$("#run_beg,#run_intr,#run_adv,#run_prof").css( {"background":"red","color":"red" });
+			}break;
+		}
+		return i;
+}
+$("#work_select").click(function(event){
+			work_id=3;
+			var w = event.target.id;
+			work_level = selectWork(w);
+			
+});
+function selectWork(e)
+{
+		switch(e)
+		{
+			case "work_beg":
+			{
+				i=1;
+				$("#work_type").empty();
+				$("#work_beg,#work_intr,#work_adv,#work_prof").css( {"background":"gray","color":"gray"  });
+				$("#work_type").append('Beginner');
+				$("#work_beg").css( {"background":"red","color":"red" });
+			}
+			break;
+			case "work_intr":{
+				i=2;
+				$("#work_type").empty();
+				$("#work_beg,#work_intr,#work_adv,#work_prof").css( {"background":"gray","color":"gray"  });
+				$("#work_type").append('Intermediate');
+				$("#work_beg,#work_intr").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "work_adv":{
+				i=3;
+				$("#work_type").empty();
+				$("#work_beg,#work_intr,#work_adv,#work_prof").css({"background":"gray","color":"gray"  });
+				$("#work_type").append('Advanced');
+				$("#work_beg,#work_intr,#work_adv").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "work_prof":{
+				i=4;
+				$("#work_type").empty();
+				$("#work_beg,#work_intr,#work_adv,#work_prof").css( {"background":"gray","color":"gray"  });
+				$("#work_type").append('Professional');
+				$("#work_beg,#work_intr,#work_adv,#work_prof").css( {"background":"red","color":"red" });
+			}break;
+		}
+		return i;
+	}
+$("#cyl_select").click(function(event){
+			var c = event.target.id;
+			cyl_id=3
+			cyl_level = selectCycle(c);
+			
+});	
+function selectCycle(e)
+{
+		switch(e)
+		{
+			case "cyl_beg":
+			{
+				$("#cyl_type").empty();
+				$("#cyl_beg,#cyl_intr,#cyl_adv,#cyl_prof").css({"background":"gray","color":"gray"});
+				$("#cyl_type").append('Beginner');
+				i = 1;
+				$("#cyl_beg").css( {"background":"red","color":"red" });
+			}
+			break;
+			case "cyl_intr":{
+				$("#cyl_type").empty();
+				$("#cyl_beg,#cyl_intr,#cyl_adv,#cyl_prof").css( {"background":"gray","color":"gray"});
+				$("#cyl_type").append('Intermediate');
+				$("#cyl_beg,#cyl_intr").css( {"background":"red","color":"red" });
+				i = 2;
+				
+			}break;
+			case "cyl_adv":{
+				$("#cyl_type").empty();
+				$("#cyl_beg,#cyl_intr,#cyl_adv,#cyl_prof").css({"background":"gray","color":"gray"});
+				$("#cyl_type").append('Advanced');
+				$("#cyl_beg,#cyl_intr,#cyl_adv").css( {"background":"red","color":"red" });
+				i = 3;
+				
+			}break;
+			case "cyl_prof":{
+				$("#cyl_type").empty();
+				$("#cyl_beg,#cyl_intr,#cyl_adv,#cyl_prof").css({"background":"gray","color":"gray"  });
+				$("#cyl_type").append('Professional');
+				$("#cyl_beg,#cyl_intr,#cyl_adv,#cyl_prof").css( {"background":"red","color":"red" });
+				i = 4;
+			}break;
+		}
+		return i;
+	}
+
+$("#run_mapSelect,#work_mapSelect,#cyl_mapSelect").click(function(event)
+{ 
+		event.preventDefault(); 
+		sport_sel = event.target.id;
+		if(sport_sel == 'run_mapSelect' )
+		{
+			run_id = 2;
+		}
+		else if(sport_sel == 'cyl_mapSelect')
+		{
+			work_id = 3;
+		}else if(sport_sel == 'work_mapSelect')
+		{
+			cyl_id = 5;
+		}
+		document.getElementById('searchLoc').value = '';
+		$.mobile.changePage("#mapPage",{transition: "none",showLoadMsg: false});
+		maps();
+});
+
+var latitude,longitude;
+function maps()
+{
+	document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() 
+	{
+       navigator.geolocation.getCurrentPosition(onSuccess,onError);
+    }
+	
+}
+function onError(error)
+{
+	//alert('map error:'+error);
+	onSuccess();
+}
+	
+function onSuccess(position) 
+{
+	//alert('position:'+position);
+	if(position == undefined)
+	{
+		var latlng = new google.maps.LatLng (12.9667, 77.5667);
+	}
+	else
+	{
+		latitude = position.coords.latitude;
+  		longitude = position.coords.longitude;
+		var latlng = new google.maps.LatLng (latitude, longitude);	
+	}
+  
+  //alert(latlng);
+  mapOptions = { 
+    				zoom : 14, 
+    				center : latlng, 
+    				mapTypeId : google.maps.MapTypeId.ROADMAP 
+  				};
+	var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+	var marker = new google.maps.Marker({
+                     position: latlng,
+                     map: map,
+                     title:"Current Location!"
+                     })
+  		//var map = new google.maps.Map(document.getElementById('map-canvas'),options);
+		//get the location and stored in variables
+  		var firstLocation =(document.getElementById('searchLoc'));
+			//use to provide user some  prediction of value based on earlier typed values 
+		var autocomplete = new google.maps.places.Autocomplete(firstLocation);
+  			autocomplete.bindTo('bounds', map);
+		var infowindow = new google.maps.InfoWindow();
+		google.maps.event.addListener(map, 'click', function (event)
+		{
+			//alert(event.latLng)
+		 	addMarker(event.latLng);
+	      	var latl = event.latLng.toString();
+    	  	s = latl.slice(1, latl.length - 1);
+     	  	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + s + "&sensor=false";
+      		$.getJSON(url, function (data) 
+	  		{
+		  		var adress = data.results[0].address_components;
+				var selectedAddress = '';
+				var count=0;
+				for (var i = 0; i < adress.length; i++) 
+				{
+              		if (adress[i].types[0] == "sublocality") 
+					{
+						if(count == 0)
+						{
+							var sublocality = adress[i].long_name;
+                  			selectedAddress = selectedAddress.concat(sublocality);
+							count++;
+						}
+              		}
+              		if (adress[i].types[0] == "locality") 
+					{
+                  		var locality = ", "+ adress[i].long_name;
+                  		selectedAddress = selectedAddress.concat(locality);
+              		}
+				}
+				address = selectedAddress;
+				//alert(address);
+				//infowindow.setContent('<div>' + address + '<br>');
+				infowindow.setContent('<div><strong>' + adress[2].long_name + '</strong><br>' + address);
+				infowindow.close();
+      			infowindow.open(map,marker);
+		    });
+  		});
+		 
+	function addMarker(location) 
+	{
+		latitude = 0 ;
+		longitude = 0 ;
+	 	var latl = location.toString();
+   	  	s = latl.slice(1, latl.length - 1);
+	  	var loc = s.split(',');
+	  	latitude = loc[0];
+	  	longitude = loc[1];
+	  	var latLong = {"id":sport_sel,"lat":latitude,"long":longitude}
+	  	latlongArr.push(latLong);
+ 		marker = new google.maps.Marker({
+    									position: location,
+    									map: map,
+    									visible: true
+ 									});
+  		marker.setVisible(false);
+	}			
+	google.maps.event.addListener(autocomplete, 'place_changed', function () 
+	{
+      	var place = autocomplete.getPlace();
+		addMarker(place.geometry.location);
+				var adress = place.address_components;
+				var selectedAddress = '';
+				var count=0;
+				for (var i = 0; i < adress.length; i++) 
+				{
+              		if (adress[i].types[0] == "sublocality") 
+					{
+                  		if(count == 0)
+						{
+							var sublocality = adress[i].long_name;
+                  			selectedAddress = selectedAddress.concat(sublocality);
+							count++;
+						}
+              		}
+              		if (adress[i].types[0] == "locality") 
+					{
+                  		var locality = ", "+ adress[i].long_name;
+                  		selectedAddress = selectedAddress.concat(locality);
+              		}
+				}
+				address = selectedAddress;
+			//alert('address:'+address);
+		infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+		//address = place.formatted_address;
+      	infowindow.close();
+      	infowindow.open(map,marker);
+	});
+	var lat,long;
+	google.maps.event.addListener(marker, 'click', function () 
+	{
+            var location = map.getCenter();
+            var clickedLocation = new google.maps.LatLng(location);
+            alert('markerclick:'+location);
+			lat = location.lng();
+			long = location.lat();
+          
+	
+   });
+   
+}
+
+function showAddress()
+{
+	//alert('address:'+address);
+	if(address)
+	{
+		switch(sport_sel)
+		{
+			case "run_mapSelect":
+			{
+				$("#run_mapSelect").empty();
+				$("#run_mapSelect").append(address);
+			}break;
+			case "work_mapSelect":
+			{
+				$("#work_mapSelect").empty();
+				$("#work_mapSelect").append(address);
+			}break;
+			case "cyl_mapSelect":
+			{
+				$("#cyl_mapSelect").empty();
+				$("#cyl_mapSelect").append(address);
+			}break;
+		}
+		$.mobile.changePage("#SportsPage",{transition: "none",showLoadMsg: false});
+	}
+	else
+	{
+		//alert('Address Not Selected');
+	}
+
+}
+		
+function goback()
+{
+	$.mobile.changePage("#SportsPage",{transition: "none",showLoadMsg: false});
+}
+function hexc(colorval) 
+{
+	var color = '';
+    var parts = colorval.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    delete(parts[0]);
+    for (var i = 1; i <= 3; ++i){
+        parts[i] = parseInt(parts[i]).toString(16);
+        if (parts[i].length == 1) parts[i] = '0' + parts[i];
+    }
+    color = '#' + parts.join('');
+	return color;
+}
+var run_lat;
+var run_long;
+var work_lat;
+var work_long;
+var cyl_lat;
+var cyl_long;
+function saveDetails()
+{
+	$('#overlay').show();
+	sportsConfigArr = [ ];
+	var runcount = 0;
+	var workcount = 0;
+	var cylcount = 0;
+	
+	for(var i=0;i<latlongArr.length;i++)
+	{
+		if(latlongArr[i].id == 'run_mapSelect')
+		{
+			run_lat = latlongArr[i].lat;
+			run_long = latlongArr[i].long;
+		}
+		else if(latlongArr[i].id == 'work_mapSelect')
+		{
+			work_lat = latlongArr[i].lat;
+			work_long = latlongArr[i].long;
+		}
+		else if(latlongArr[i].id == 'cyl_mapSelect')
+		{
+			cyl_lat = latlongArr[i].lat;
+			cyl_long = latlongArr[i].long;
+		}
+	}
+	
+	$('#run_select li').each(function(i)
+	{
+   		$(this).attr('id'); 
+		var color = $( this ).css( "background-color" );
+		var co = hexc(color)
+		if(co == '#ff0000')
+		{
+			runcount++;
+		}
+	});
+	$('#work_select li').each(function(i)
+	{
+   		$(this).attr('id'); 
+		var color = $( this ).css( "background-color" );
+		var co = hexc(color)
+		if(co == '#ff0000')
+		{
+			workcount++;
+		}
+	});
+	$('#cyl_select li').each(function(i)
+	{
+   		$(this).attr('id'); 
+		var color = $( this ).css( "background-color" );
+		var co = hexc(color)
+		if(co == '#ff0000')
+		{
+			cylcount++;
+		}
+	});
+	var loc = document.getElementById('run_mapSelect').textContent;
+	var loc1 = document.getElementById('work_mapSelect').textContent;
+	var loc2 = document.getElementById('cyl_mapSelect').textContent;
+	
+	if(runcount != 0)
+	{
+		if(loc == 'Select Location')
+		{
+			var runConfig = { "SportID": 2, "SportLevelID": runcount, "Location":null,"Latitude":0.0,"Longitude":0.0};
+			sportsConfigArr.push(runConfig);
+		}
+		else if(loc != 'Select Location' && run_lat == undefined)
+		{
+			for(var i=0;i<sportArr.length;i++)
+			{
+				if(sportArr[i].SportID == 2)
+				{
+						var runConfig = { "SportID": 2, "SportLevelID": runcount, "Location":sportArr[i].Location,"Latitude":sportArr[i].Latitude,"Longitude":sportArr[i].Longitude};
+						sportsConfigArr.push(runConfig);
+				}
+			}
+		}
+		else 
+		{
+			var runConfig = { "SportID": 2, "SportLevelID": runcount, "Location":loc,"Latitude":run_lat,"Longitude":run_long};
+			sportsConfigArr.push(runConfig);
+		}
+	}
+	
+	if(workcount != 0)
+	{
+		if(loc1 == 'Select Location')
+		{
+			var runConfig = { "SportID": 3, "SportLevelID": workcount, "Location":null,"Latitude":0.0,"Longitude":0.0};
+			sportsConfigArr.push(runConfig);
+		}
+		else if(loc1 != 'Select Location' && work_lat == undefined)
+		{
+			for(var i=0;i<sportArr.length;i++)
+			{
+				if(sportArr[i].SportID == 3)
+				{
+						var runConfig = { "SportID": 3, "SportLevelID": workcount, "Location":sportArr[i].Location,"Latitude":sportArr[i].Latitude,"Longitude":sportArr[i].Longitude};
+						sportsConfigArr.push(runConfig);
+					
+				}
+			}
+		}
+		else
+		{
+			var runConfig = { "SportID": 3, "SportLevelID": workcount, "Location":loc1,"Latitude":work_lat,"Longitude":work_long};
+			sportsConfigArr.push(runConfig);
+		}
+		
+	}
+	if(cylcount != 0)
+	{
+		if(loc2 == 'Select Location')
+		{
+			var runConfig = { "SportID": 5, "SportLevelID": cylcount, "Location":null,"Latitude":0.0,"Longitude":0.0};
+			sportsConfigArr.push(runConfig);
+		}
+		else if(loc2 != 'Select Location' && cyl_lat == undefined)
+		{
+			for(var i=0;i<sportArr.length;i++)
+			{
+				if(sportArr[i].SportID == 5)
+				{
+						var runConfig = { "SportID": 5, "SportLevelID": cylcount, "Location":sportArr[i].Location,"Latitude":sportArr[i].Latitude,"Longitude":sportArr[i].Longitude};
+						sportsConfigArr.push(runConfig);
+				}	
+			}
+		}
+		else
+		{
+			var runConfig = { "SportID": 5, "SportLevelID": cylcount, "Location":loc2,"Latitude":cyl_lat,"Longitude":cyl_long};
+			sportsConfigArr.push(runConfig);
+		}
+	}
+	
+	if(sportsConfigArr !=0)
+	{
+		var userSports = { "UserID": userID, "Sports": sportsConfigArr };
+		//alert(JSON.stringify(userSports));
+                $.ajax({
+                    type: "POST",
+                    url: coTrainTestAPIURL + "SubmitUserSportDetails",
+                    data: JSON.stringify(userSports),
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					async:false,
+                    success: function (data) 
+					{
+                        //alert('Sports Saved Successfully');
+						$('#overlay').hide();
+             			window.location = "Slider.html";
+           				
+						sportsConfigArr = [ ];
+                    },
+                    error: function (result) {
+                       // alert("SubmitUserSportDetails Error:  " + result.status + ' ' + result.statusText);
+                    }
+                });
+	}
+	else
+	{
+		//alert('Sports not Configured');
+	}
+}	
+
+		
+</script>
+</body>
+</html>

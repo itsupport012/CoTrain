@@ -1,0 +1,41 @@
+ @font-face { 
+ font-family: FuturaStd;
+font-weight: lighter; 
+ src: url('fonts/FuturaStd-Light.otf'); 
+ } 
+ @font-face { 
+ font-family: FuturaStd;
+font-weight: lighter;
+font-style:oblique; 
+ src: url('fonts/FuturaStd-LightOblique.otf'); 
+ }
+  @font-face { 
+ font-family: FuturaStd;
+font-weight: 500; 
+ src: url('fonts/FuturaStd-Medium.otf'); 
+ } 
+ @font-face { 
+ font-family: FuturaStd;
+font-weight: 500;
+font-style:oblique; 
+ src: url('fonts/FuturaStd-MediumOblique.otf'); 
+ }
+  @font-face { 
+ font-family: FuturaStd;
+font-weight: bold; 
+ src: url('fonts/FuturaStd-Bold.otf'); 
+ } 
+ @font-face { 
+ font-family: FuturaStd;
+font-weight: bolder;
+font-style:oblique; 
+ src: url('fonts/FuturaStd-BoldOblique.otf'); 
+ }
+ @font-face { 
+ font-family: DINPro;
+font-weight: normal;
+ src: url('fonts/DINPro-Regular.otf'); 
+ }
+ 
+ 
+ 

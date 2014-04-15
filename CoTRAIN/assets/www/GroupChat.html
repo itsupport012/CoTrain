@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Location</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<script src="js/DbServiceUrl.js"></script>
+
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+<!--	sqlite database -->
+<script src="js/msgStorage.js"></script>
+
+<style>
+#user_img {
+	width: 40px;
+	height: 40px;
+	padding:0;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #fff;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 1px;
+}
+#group_nameEdit{
+	margin-left:50px;
+	
+	width:200px;
+	background-color:red;
+	text-align:center;
+	
+}
+#txt_Groupname{
+	left:50px;
+	width:200px;
+	background-color:red;
+	text-align:center;
+	color:white;
+}
+</style>
+</head>
+<body>
+<div data-role="page" data-theme="a">
+  <div data-role="header" data-position="inline">
+  
+    <h1 id="groupName">GROUP CHAT</h1>
+     <div id="group_nameEdit">
+            <input type="text" name="Group Chat" value="Group Chat" id="txt_Groupname"/>
+          </div>
+    <a data-transition="fade" data-inline="true" class="backButton" onClick="backButton();"><img src="themes/images/back.png" /></a> <a  data-inline="true" class="saveButton" onClick="editImage()"><img src="themes/images/Edit.png" id="editImage"/></a>
+     </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <div style="min-height:500px;">
+        <p class="nextEvent" id="chat"><span>NEXT EVENT:</span><span class="colorRed" id="eventDate">19 FEBRUARY,</span><span class="colorRed" id="eventTime"> 16:00</span></p>
+      </div>
+      <input style="background:#f5f5f5;border:1px solid #d2d2d2;" type="text" name="name" id="msgtext" value="" Placeholder="Send Message" />
+       <button id="sendButton">Send</button>
+    </div>
+  </div>
+</div>
+	
+<script>
+var groupUsers = new Array();
+$(function()
+{
+	$("#sendButton").hide();
+	$("#group_nameEdit").hide();
+	var obj = jQuery.parseJSON(window.sessionStorage.getItem("sport_usr") );
+	$("#eventDate").text(obj.date);
+	$("#eventTime").text(' '+obj.time);
+	gId = window.sessionStorage.getItem("groupID");
+	$('#groupName').text(obj.GroupName);
+	
+	$.ajax({
+              type: "GET",
+              url: coTrainTestAPIURL + "GetChatGroupUsers?grpid="+gId,
+              processData: false,
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function (data) 
+			  {
+				 for (var i = 0; i < data.length; i++) 
+				 {
+					QbID = data[i].QuickbloxUserID;
+					groupUsers.push(QbID);
+				 }
+              },
+             error: function (result) 
+			 {
+                // alert("GetChatGroupUsers Error:" + result.status + ' ' + result.statusText);
+             }
+    });
+	
+});
+
+
+$("#editImage").click(function(e) 
+{
+	window.location = "GroupDetails.html";
+});
+$('#sendButton').click(function()
+{
+	QBChatRoom = window.sessionStorage.getItem("QBChatRoomName");
+	room_id = ""+QBChatRoom+"@muc.chat.quickblox.com";
+	
+	var date = new Date();
+	var time = date.getHours()+':'+date.getMinutes();
+	var message = $('#msgtext').val();
+	var encodedMsg = btoa(fbUserName.concat("  says ",message));
+				
+							//	************  Quickblox events create   *********************
+				gp_id = groupUsers.toString(); 
+				//alert(gp_id);
+				create_params = {"notification_type": "push", "environment": "production","message":encodedMsg,"user":{ "ids":gp_id}}
+				QB.messages.events.create(create_params, function(err,result)
+				{
+					//alert('event log:'+result);
+					//alert('event error'+err.detail);
+				});
+				//alert('room:'+room_id+'\n'+'message:'+message+'\n'+'photo:'+owner_photo+'\n'+'name:'+fbUserName);
+	SendMessageCotrain(message,room_id,fbUserName,owner_photo);
+		
+	$('#msgtext').val('');	
+
+});
+function backButton()
+{
+	window.location = "messages.html";
+}
+
+</script>
+</body>
+</html>

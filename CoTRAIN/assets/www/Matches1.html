@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Location</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="js/listbox.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+
+<!--	DataBase Service Url	-->
+<script src="js/DbServiceUrl.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!-- cordova facebook plugin -->
+<script type="text/javascript" src="js/cdv-plugin-fb-connect.js"></script>
+<!-- facebook js sdk -->
+<script type="text/javascript" src="js/facebook-js-sdk.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+</head>
+<style>
+#profile_img {
+	width: 65px;
+	height: 65px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #FFF;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 10px;
+}
+.center {
+	background: #e2e2e2;
+	border-bottom: 2px solid #999 !important;
+}
+</style>
+<body>
+<div data-role="page" data-theme="a">
+  <div data-role="header" data-position="inline">
+    <h1>MATCHES</h1>
+    <a href="javascript:location.replace('./GroupDetails.html');" data-transition="fade" data-inline="true" class="backButton"><img src="themes/images/back.png" /></a> <a data-inline="true" class="saveButton" onClick="createGroup()"><img src="themes/images/Groups.png" id="createGroup_img"/></a> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports1">
+      <ul class="matches" id="ul_id">
+      </ul>
+    </div>
+  </div>
+</div>
+<script>
+var queryString = new Array();
+var userDetails = new Array();
+var uID;
+var sID;
+var lat;
+var long;
+var grpId;
+$('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+	
+document.addEventListener('deviceready', function() 
+{
+		
+              FB.init({
+                  		appId: '533839336729739',
+                  		nativeInterface: CDV.FB,
+                  		status     : true, // check login status
+						cookie     : true, // enable cookies to allow the server to access the session
+                  		useCachedDialogs: false,
+						sharedSession:true
+              });
+              FB.getLoginStatus(handleStatusChange,true);
+			
+});			
+function handleStatusChange(response) 
+{
+  if (response.authResponse) 
+  {
+	 makeCall(response);
+  } 
+  else 
+  {
+   // alert('No Response');
+  }
+}
+$(document).ready(function() 
+{
+	$('#overlay').show();
+	$("#createGroup_img").hide();
+	userID = localStorage.getItem("cotrain");
+	var obj = jQuery.parseJSON( window.sessionStorage.getItem("sport"+userID) );
+	 if(obj.uId != null ) 
+	 {
+		   uID = obj.uId;
+		   sID = obj.sId;
+		   lat = obj.lat;
+		   long = obj.long;
+		   grpId = obj.gId;
+         //alert(uID+'\n'+sID+'\n'+lat+'\n'+long+'\n'+grpId);
+		
+		   $.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL+"FindPartnersWithoutGroupUsers?uid="+uID+"&sid="+sID+"&lng="+long+"&lat="+lat+"&gid="+grpId,
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) 
+					{    
+						$('#overlay').hide();
+                        		for(var i=0; i< data.length; i++)
+								{
+										userFriends(data[i].FacebookID,i);
+										$("#ul_id").append('<li id="'+i+'" onclick= userSelect('+i+','+data[i].UserID+') ><div class="matchesName" id="matchID'+i+'"><div class="circular"><img src="'+data[i].PhotoURL+'"id="profile_img"/></div><h2 id="usr_Name">'+data[i].UserName+'</h2></div><div class="machesDetails"><P><span id="usr_Gender">'+data[i].Gender+'</span>,<span class="colorRed" id="usr_Age">'+data[i].Age+'</span><span>yrs</span><span class="mapLocation" id="usr_Loc">'+data[i].Location+'</span></P><p>Level<ul id="usr_SptLevel'+i+'"></ul><span id="usr_distance">Distance(kms):</span><span class="colorRed" id="usr_dis">'+data[i].Distance+'</span></p></div></li>');
+										
+										$('#usr_SptLevel'+i+'').append('<li class="circleGray" id="spt_beg"></li><li class="circleGray" id="spt_intr"></li><li class="circleGray" id="spt_adv"></li><li class="circleGray" id="spt_prof"></li>');
+            
+         								sportLevel(data[i].SportLevel);
+								}    
+								 $('#ul_id').listview('refresh');                         
+                    		},
+                    error: function (result) {
+                        //alert("FindPartnersWithoutGroupUsers Error:  " + result.status + '   ' + result.statusText);
+                    }
+                });
+       }
+
+});
+//********************	To check user is friend or not to owner in facebook list*********************//
+function userFriends(f_id,i)
+{
+	FB.api('/me/friends/'+f_id, function (response) 
+	{
+        if (response && !response.error) 
+		{
+            if (response.data.length == 0) 
+			{
+                    mutualfriends(f_id,i);
+            }
+            else 
+			{
+                  $('#matchID'+i).append('<img src="themes/images/FbFriends_Active.png"/>');
+            }
+        }
+    });
+
+}
+//********************	To find the mutual friends between owner and user *********************//
+function mutualfriends(fri_id,i) 
+{
+    FB.api('/me/mutualfriends/' + fri_id, function (response) 
+	{
+        if (response && !response.error) 
+		{
+		  $('#matchID'+i).append('<span class="mutualFriends">'+response.data.length+'</span><img src="themes/images/FbFriends_InActive.png"/>');
+		}
+    }); 
+}
+
+	//********************	Selecting no of users to create group chat	*********************//
+function userSelect(i,id)
+{
+	if($("#"+i).hasClass("selected")==false)
+	{
+  		 $("#"+i).addClass("selected");
+		 userDetails.push(id);
+		 $("#createGroup_img").show();
+	}
+	else
+	{
+ 		$("#"+i).removeClass("selected");
+		userDetails.pop(id);
+		if(userDetails.length == 0)
+		{
+			$("#createGroup_img").hide();
+		}
+	}
+}
+
+function sportLevel(e)
+{
+	$("#spt_type").empty();
+		switch(e)
+		{
+			case "Beginner":
+			{
+				$("#spt_beg").css( {"background":"red","color":"red" });
+			}break;
+			case "Intermediate":{
+				$("#spt_beg,#spt_intr").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "Advanced":{
+				$("#spt_beg,#spt_intr,#spt_adv").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "Professinal":{
+				$("#spt_beg,#spt_intr,#spt_adv,#spt_prof").css( {"background":"red","color":"red" });
+			}break;
+		}
+}
+
+	//********************	create a group and submit details to server DB	*********************//
+function createGroup()
+{
+	$('#overlay').show();
+	var groupId;
+	var groupNam;
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	 var name = fbUserName.split(' ');
+     var obj = jQuery.parseJSON( window.sessionStorage.getItem("sport_usr1"));
+	 		if(obj.sId == 2)
+			{
+				var sportType = 'Run';	
+				groupNam = name[0]+'_'+sportType+'_'+obj.date;
+			}
+			else if(obj.sId == 3)
+			{
+				var sportType = 'Workout';	
+				groupNam = name[0]+'_'+sportType+'_'+obj.date;
+			}
+			else if(obj.sId == 5)
+			{
+				var sportType = 'Cycle';	
+				groupNam = name[0]+'_'+sportType+'_'+obj.date;
+			}
+	 var groupDetails = { "GroupID": 0, "GroupName": groupNam, "Date": obj.date,
+                    "Time":obj.time, "GroupOwnerID": obj.uId, "SportID": obj.sId
+                    };
+			//alert(JSON.stringify(groupDetails));
+			//********************	group with user's list	*********************//
+		if(userDetails.length !=0)
+		{
+           			var groupUsers = { "GroupID": grpId, "UserIDs":userDetails };
+					//alert('groupUsers:'+JSON.stringify(groupUsers))
+                	$.ajax({
+                    		type: "POST",
+                    		url: coTrainTestAPIURL + "SubmitGroupUsers",
+                    		data: JSON.stringify(groupUsers),
+                    		contentType: "application/json; charset=utf-8",
+                    		dataType: "json",
+                    		processData: false,
+                    		success: function (data) 
+							{
+                        		alert('Added To Group');
+            					$('#overlay').hide();
+               							window.location.href = "GroupDetails.html";
+           						
+                   			},
+                    		error: function (result) {
+                        			alert("SaveUserDetails Error:" + result.status + ' ' + result.statusText);
+                   			}
+                	});
+		}
+		else
+		{
+			//alert('Select User')
+		}
+	
+}
+//********************	view profile of selected user	*********************//
+function clickProfile(p)
+{
+	 window.sessionStorage.removeItem("usrID")
+	 window.sessionStorage.setItem("usrID", p);
+	    
+     window.location.href = "ViewProfile.html";
+          
+	
+}
+
+</script>
+</body>
+</html>

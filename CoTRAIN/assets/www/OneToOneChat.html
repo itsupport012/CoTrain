@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Location</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!--	DataBase Service Url	-->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<!--<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>-->
+
+	<!--	sqlite database -->
+<script src="js/msgStorage.js"></script>
+<style>
+#user_img {
+	width: 40px;
+	height: 40px;
+	padding:0;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #fff;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 1px;
+}
+#msgCount
+{
+	position:relative;
+	color:#FFF;
+	margin-top:0px;
+}
+</style>
+</head>
+<body>
+<div data-role="page" data-theme="a">
+  <div data-role="header" data-position="inline">
+    <h1 id = 'headding'>CHAT</h1>
+    <a data-transition="fade" data-inline="true" class="backButton" onClick="backFun();"><img src="themes/images/back.png" /></a> <a href="javascript:location.replace('./messages.html');" data-transition="fade" data-inline="true" class="saveButton messages"></a> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <div style="min-height:500px;" id = "box">
+        <p class="nextEvent"><span></span><span class="colorRed"></span><span class="colorRed"></span></p>
+        <br/>
+        
+      </div>
+      <input style="background:#f5f5f5;border:1px solid #d2d2d2;" type="text" name="name" id="msgtext" value="" Placeholder="Send Message">
+      </input>
+      <button id="sendButton">Send</button>
+    </div>
+  </div>
+</div>
+<script>
+var mainId;
+var userJID;
+var sampleID;
+var friendName;
+var devicePlatform;
+var deviceUuid;
+var QBToken;
+
+$(document).ready(function()
+{
+							//	******* app Login User details	*****************//
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+ 	$('#sendButton').hide();
+						//	******* QuickBlox Owner details	*****************//
+		owner_id = window.sessionStorage.getItem("qbId");
+		owner_user = window.sessionStorage.getItem("qbUser");
+		owner_pass = window.sessionStorage.getItem("qbPass");
+		owner_photo = window.sessionStorage.getItem("qbPhoto");
+		//alert(owner_user+'  and   '+owner_pass);
+		
+						//	******* Selected User details	*****************//
+	selectedFriendId =  window.sessionStorage.getItem('selectedUserId');
+	selectedFriendName =  window.sessionStorage.getItem('selectedUserName');
+	selectedFriendPhoto = window.sessionStorage.getItem("selectedUserPhoto");
+
+		//***************  Quickblox Initalization	*****************//
+	QB.init(config.Appid, config.AuthKey, config.AuthSec);
+ 		//***************  Quickblox create Session	*****************//
+ 	QB.createSession({login: owner_user, password: owner_pass}, function(error, response)
+ 	{
+    	if(error) 
+		{
+        	//console.log(error);
+    	} 
+		else 
+		{
+			QB.data.list("Cotrain_Chat",function(err,result)
+			{
+					//alert('list result:'+result);
+					//alert('list err:'+err.detail);
+					var output = '';
+					var output1 = '';
+					var output2 = '';
+					var listArr = new Array();
+					for (var entry1 in result) 
+					{
+						if(entry1 == "items")
+						{
+							var item1 = result[entry1];
+							for(var l = 0; l<item1.length;l++)
+							{
+								var obj = item1[l];
+								//alert(JSON.stringify(obj));
+								$('#headding').text(selectedFriendName+'- Chat');
+								if(selectedFriendId)
+								{
+									if((obj.receiver_id == owner_id && obj.user_id == selectedFriendId) || (obj.receiver_id == selectedFriendId && obj.user_id == owner_id))
+									{
+										listArr.push(obj);
+									}
+								}
+							}
+						}
+					 }
+					 listArr.sort(function(a, b) {
+										return a.created_at - b.created_at;
+									});
+					 getMessageHistory_success(listArr);
+					 //alert(listArr.length);
+			});
+			  xmppConnection(); 
+		}
+	});
+	
+});
+function getMessageHistory_success(results) 
+{
+	//alert(results.length);
+	//alert(JSON.stringify(results));
+	
+				var frmName;
+				for (var i=0; i<results.length; i++) 
+				{
+					if(owner_id == results[i].user_id)
+					{
+						//alert('receiver');
+						timeStamp = new Date(results[i].created_at*1000);
+						var myDate = timeStamp.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
+						//alert(myDate);
+						var html = '<div class="messageItemRight"><div class="circleMessage"><img src="'+results[i].Avatar_Path+'"id="user_img"/></div><div><h2>Me</h2><p>'+results[i].message+'</p><span>'+myDate+'</span></div></div><br/>';
+						$('.nextEvent').append(html);
+						
+					}
+					else 
+					{
+						//alert('else');
+						timeStamp = new Date(results[i].created_at*1000);
+						var myDate = timeStamp.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
+						var html = '<div class="messageItemLeft"><div class="circleMessage"><img src="'+results[i].Avatar_Path+'"id="user_img"/></div><div><h2>'+results[i].Sender_Name+'</h2><p>'+results[i].message+'</p><span>'+myDate+'</span></div></div><br/>';
+						$('.nextEvent').append(html);
+					}
+				}
+}
+function reConnect()
+{
+	xmppConnection();	
+}
+function xmppConnection()
+{
+		connection = new Strophe.Connection("http://chat.quickblox.com:5280");
+		userJID = owner_id + "-" + config.Appid + "@" + "chat.quickblox.com";
+				connection.connect(userJID, owner_pass, function (status) 
+				{
+					//alert('status:'+status);
+					switch (status) 
+					{
+						case Strophe.Status.ERROR:
+		  								console.log('[Connection] Error');
+										reConnect();
+		  				break;
+						case Strophe.Status.CONNECTING:
+										console.log('[Connection] Connecting');
+						break;
+						case Strophe.Status.CONNFAIL:
+						  				console.log('[Connection] Failed to connect');
+										reConnect();
+						break;
+						case Strophe.Status.AUTHENTICATING:
+						  				console.log('[Connection] Authenticating');
+						break;
+						case Strophe.Status.AUTHFAIL:
+						  				//alert('[Connection] Unauthorized');
+										reConnect();
+										//connection.connect(userJID, owner_pass,reConnect);
+						break;
+						case Strophe.Status.CONNECTED:
+						  				//alert('[Connection] Connected');
+										subscriptions();
+					  		// Create an event handler for getting messages
+						  		connection.addHandler(onMessage, null, 'message', null, null, null);
+						  		$('#sendButton').show();
+						break;
+						case Strophe.Status.DISCONNECTED:
+		  								//alert('[Connection] Disconnected');
+										reConnect();
+										//connection.connect(userJID, owner_pass,reConnect);
+										$('#sendButton').hide();
+						break;
+						case Strophe.Status.DISCONNECTING:
+						  				console.log('[Connection] Disconnecting');
+						break;
+						case Strophe.Status.ATTACHED:
+						  			//console.log('[Connection] Attached');
+						break;
+					}
+				});
+	
+}
+function subscriptions()
+{
+		deviceplatform = window.localStorage.getItem("devicePlatform");
+		udid =  window.localStorage.getItem("deviceUuid");
+		client_token = window.localStorage.getItem("device_token");
+		
+							//	************  Quickblox push tokens  *********************
+			push_token_params = {	environment: "production", 
+									client_identification_sequence: client_token,
+									platform: deviceplatform,
+									udid: udid
+				 				}
+				QB.messages.tokens.create(push_token_params,function(err,result)
+				{
+					//alert('push log:'+result);
+					//alert('push error:'+err.detail);
+				});
+							//	************  Quickblox subscriptions   *********************
+				sub_params = {	notification_channels:"gcm"								
+				 			 }
+				QB.messages.subscriptions.create(sub_params,function(err,result)
+				{
+					//alert('sub log:'+result);
+					//alert('sub error:'+err.detail);
+				});
+		
+}
+	//***************  OnMessage *****************//
+var fromUserMsgtxt;
+var userMessageArr = new Array();
+var CoTRAINDB;
+function onMessage(msg) 
+{
+	
+		var date = new Date();
+		var time = date.getHours()+':'+date.getMinutes();
+		var to = msg.getAttribute('to').split('-');
+		var from = msg.getAttribute('from').split('-');
+		var type = msg.getAttribute('type');
+		var from_img = msg.getAttribute('img');
+		var elems = msg.getElementsByTagName('body');
+		fromUserMsgtxt = elems[0].textContent;
+		//alert('onetooneType:'+type);
+		//alert('from:'+from[0]+' to'+to[0]);
+		
+			timestamp = date.getTime() / 1000;
+			//alert('<br />' + timestamp);
+		if(type == "privateChat")
+		{
+			
+			if(selectedFriendId == from[0])//	******* chating with selected person	*****************//
+			{
+					//alert('selected user');
+								CoTRAINDB.transaction(function(t) 
+								{
+									//SELECT * FROM privateChat WHERE FromUserid ='+from[0]
+									t.executeSql("SELECT * FROM privateChatNotify WHERE FromUserid ="+from[0], [ ], function (t, results) 
+									{
+											//alert(results.rows.length + ":rows")
+										if(results.rows.length > 0)
+										{
+											t.executeSql("UPDATE privateChatNotify set LastMsgDateTime = "+timestamp+" where FromUserid="+from[0]); //alert('update');
+										}
+										else
+										{
+											t.executeSql("INSERT INTO privateChatNotify(FromUserid,LastMsgDateTime) VALUES (?,?)",[from[0],timestamp]);
+											//alert('insert');
+														
+										}
+										var html = '<div class="messageItemLeft"><div class="circleMessage"><img src="'+selectedFriendPhoto+'"id="user_img"/></div><div><h2>'+selectedFriendName+'</h2><p>'+fromUserMsgtxt+'</p><span>'+time+'</span></div></div><br/>';
+					$('.nextEvent').append(html);
+									},function(tx, error)
+									{
+				 						//alert('error');
+			  							});
+   								});
+					
+					
+					
+			}
+			else 	//	******* Message from another person while chating with one person	*****************//
+			{
+					//alert('another user');
+					QB.users.listUsers(function(err, response)
+					{
+						for (var i=0; i < response.items.length; i++) 
+						{
+							if(response.items[i].user.id.toString() == from[0])
+							{
+								fromName = response.items[i].user.full_name;
+								
+								CoTRAINDB.transaction(function (t) 
+								{
+									t.executeSql("SELECT * FROM privateChat WHERE FromUserid ="+from[0], [], function (t, results) 
+									{
+													//alert(results.rows.length + "rows")
+										if(results.rows.length > 0)
+										{
+											t.executeSql("UPDATE privateChat set ChatMessage = "+fromUserMsgtxt+",MsgDateTime = "+time+" where FromUserid="+from[0]); 
+										}
+										else
+										{
+											t.executeSql("INSERT INTO privateChat(FromUserid,FromUserName,FromUserPhoto,ChatMessage,MsgDateTime) VALUES (?,?,?,?,?)",[from[0],fromName,from_img,fromUserMsgtxt,time]);
+										}
+										$(".messages").empty();
+										$(".messages").append('<img src="themes/images/Messages.png"/><span id="msgCount"></span>');
+									});
+   								});
+								
+							}
+						}
+						
+					});
+			}
+		}
+			// we must return true to keep the handler alive.  
+			// returning false would remove it after it finishes.
+		return true;
+}
+	//***************  Send message to selected user  *****************//
+$('#sendButton').click(function()
+{
+		if(selectedFriendId)
+		{
+			to = selectedFriendId +"-8335@chat.quickblox.com";
+			sendMesage(to);
+		}
+		else
+		{
+			to = fromUser_id +"-8335@chat.quickblox.com";
+			sendMesage(to);
+		}
+});
+
+function sendMesage(to)
+{
+		var date = new Date();
+		var time = date.getHours()+':'+date.getMinutes();
+		params = {
+					to: to, // JID of recipient QB User
+					from:userJID, // JID of sender QB user
+					type: 'privateChat', // type of the message
+					img:owner_photo
+				 }
+				var msg = $('#msgtext').val();
+				var encodedMsg = btoa(fbUserName.concat("  says ",msg));
+				
+							//	************  Quickblox events create   *********************
+				create_params = {"notification_type": "push", "environment": "production", "message": encodedMsg, "user": { "ids": to.split('-')[0]}}
+				QB.messages.events.create(create_params, function(err,result)
+				{
+						//alert('event log:'+result);
+				});
+				//	************  Quickblox pull events   *********************
+				if(selectedFriendId)
+				{
+					data = {
+								user_id:owner_id,
+								receiver_id:selectedFriendId,
+								Sender_Name:fbUserName,
+								Reciever_Name:selectedFriendName,
+								Avatar_Path:owner_photo,
+								message:msg
+							}
+				}
+				else if(fromUser_id)
+				{
+					data = {
+								user_id:owner_id,
+								receiver_id:fromUser_id,
+								Sender_Name:fbUserName,
+								Reciever_Name:fromUser_name,
+								Avatar_Path:owner_photo,
+								message:msg
+							}
+				}
+				QB.data.create('Cotrain_Chat', data, function(err, res)
+				{
+					  if (err) 
+					  { 
+						//alert('data.create err:'+err.detail);
+					  } else 
+					  {
+						//alert('data.create res:'+res);
+					  }
+				});
+
+		var msg = $msg(params).c('body').t($('#msgtext').val());
+		toMsgtxt = $('#msgtext').val();
+		
+		connection.send(msg.tree());
+		var html = '<div class="messageItemRight"><div class="circleMessage"><img src="'+owner_photo+'"id="user_img"/></div><div><h2>ME</h2><p>'+$('#msgtext').val()+'</p><span>'+time+'</span></div></div><br/>';
+		
+		$('.nextEvent').append(html);
+		$('#msgtext').val('');
+			
+}
+function backFun()
+{
+	
+	window.location = window.sessionStorage.getItem("backPage");
+	
+	
+}
+
+</script>
+</body>
+</html>

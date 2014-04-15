@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Sports</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/idangerous.swiper.css">
+<link rel="stylesheet" href="themes/normalize.css">
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="themes/new/style.css"/>
+<link rel="stylesheet" href="themes/new/style.mobile.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!--	DataBase Service Url	-->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+
+</head>
+<body>
+<div data-role="page" data-theme="a" id="swiperPage">
+  <div class="panel left snap-drawer" data-role="panel" data-position="left" data-display="push" id="panel-01">
+    <ul>
+      <li><a href="javascript:location.replace('./MyProfile.html');" id="UserNam"><img src="themes/images/user.png"></a></li>
+      <li><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/Find.png"> Find Partners</a></li>
+      <li><a href="javascript:location.replace('./MySports.html');"><img src="themes/images/MySports.png">My Sports</a></li>
+      <li><a href="javascript:location.replace('./messages.html');"><img src="themes/images/Messages.png"> Messages</a></li>
+      <br>
+      <br>
+      <br>
+      <li><a href="javascript:location.replace('./Settings.html');"><img src="themes/images/Settings.png">Settings</a></li>
+      <li><a href="javascript:location.replace('./Feedback.html');"><img src="themes/images/FeedBack.png">Feedback</a></li>
+    </ul>
+  </div>
+  <div class="header" data-role="header"> <span class="open left"><a href="#panel-01"><img src="themes/images/open.png"/></a></span> <span class="title">Settings</span> </div>
+  
+
+  <div data-role="content" data-theme="a"  class="content" style="height:100%">
+    <div class="SelectSports"> <br/>
+      <br/>
+      <div class="heading">
+        <h4>ACCOUNT DETAILS</h4>
+      </div>
+      <div class=notficationSettings>
+        <fieldset class="ui-grid-e" style="border-bottom:1px solid #d2d2d2">
+          <div class="ui-block-a" >Facebook Login</div>
+          <div class="ui-block-b" style="color:red" id="Settings_user"></div>
+        </fieldset>
+        <br/>
+        <fieldset class="ui-grid-e">
+          <div class="ui-block-a" id="signOutAcc">Sign Out</div>
+          <div class="ui-block-b" ><img src="themes/images/next.png"/></div>
+        </fieldset>
+        <br/>
+        <fieldset class="ui-grid-e">
+          <div class="ui-block-a" id= "deleteAcc">Delete Account</div>
+          <div class="ui-block-b" ><img src="themes/images/next.png"/></div>
+        </fieldset>
+      </div>
+      <br/>
+      <br/>
+      <br/>
+      <div class="heading">
+        <h4>NOTIFICATIONS</h4>
+      </div>
+      <div class=notficationSettings>
+        <fieldset class="ui-grid-e">
+          <div class="ui-block-a" >Messages</div>
+          <div class="ui-block-b" >
+            <select name="flip-1" id="flip-1" data-role="slider" onChange="notification()">
+              <option value="false">Off</option>
+              <option value="true" >On</option>
+            </select>
+          </div>
+        </fieldset>
+        <fieldset class="ui-grid-e">
+          <div class="ui-block-a" >Events</div>
+          <div class="ui-block-b" >
+            <select name="flip-1" id="flip-1" data-role="slider">
+              <option value="false">Off</option>
+              <option value="true">On</option>
+            </select>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+$(function()
+{
+	$('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+	
+});
+$(document).ready(function() 
+{
+	$('#overlay').show();
+	
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	$("#UserNam").append(fbUserName);
+	$("#Settings_user").append(fbUserName);
+			$.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL + "/GetUserNotificationStatus?uid="+userID,
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+					async:false,
+                    dataType: "json",
+                    success: function (data)
+					{
+						$('#overlay').hide();
+						if(data == false)
+						{
+							$('#flip-1').val('false').trigger('create').slider("refresh");
+						}
+						else
+						{
+							$('#flip-1').val('true').trigger('create').slider("refresh");
+						}
+						
+                    },
+                    error: function (result) {
+                        //alert("GetUserNotificationStatus Error:" + result.status+' '+result.statusText);
+                    }
+                });
+	
+});
+function notification()
+{
+	var msg_on = $( "#flip-1" ).val();
+			$.ajax({
+                    type: "POST",
+                    url: coTrainTestAPIURL + "ChangeNotificationSettings?uid="+userID+"&ns="+msg_on,                    
+					processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                       							 //alert(data);
+                    },
+                    error: function (result) {
+                       // alert("ChangeNotificationStatus Error:" + result.status + '' + result.statusText);
+                    }
+                });	
+}
+$("#deleteAcc").click(function() 
+{
+	window.localStorage.clear();
+	navigator.app.exitApp();
+
+});
+$("#signOutAcc").click(function(e) 
+{
+	window.localStorage.clear();
+    window.location = "index.html";
+});
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Location</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!--	DataBase Service Url	-->
+<script src="js/DbServiceUrl.js"></script>
+
+<!-- cordova facebook plugin -->
+<script type="text/javascript" src="js/cdv-plugin-fb-connect.js"></script>
+<!-- facebook js sdk -->
+<script type="text/javascript" src="js/facebook-js-sdk.js"></script>
+
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+<script src="js/QB/adapter.js"></script>
+<script src="js/QB/qb_videochat_signalling.js"></script>
+<script src="js/QB/qb_videochat.js"></script>
+<script src="js/QB/smiles.js"></script>
+<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+<style>
+#profile_img {
+	width: 65px;
+	height: 65px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #FFF;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 12px;
+}
+.circleGrayLvl {
+	width: 14px;
+	height: 14px;
+	background: gray;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	border-radius: 7px;
+}
+</style>
+</head>
+
+<body>
+<div data-role="page" data-theme="a">
+  <div data-role="header" data-position="inline">
+    <h1>VIEW PROFILE</h1>
+    <a href="javascript:location.replace('./Matches.html');" data-transition="fade" data-inline="true" class="backButton"><img src="themes/images/back.png" /></a> <a href="javascript:location.replace('./messages.html');" data-inline="true" class="saveButton messages"><img src="themes/images/Messages.png" /></a></div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports"> <br/>
+      <ul class="matches">
+        <li class="selected">
+          <div class="matchesName" style="background:#fff;margin-left:0px;">
+            <div class="circular" style="margin-left:2px;"><img id="profile_img"/></div>
+            <h2 style="color:red;margin-left:73px;"id="profile_name"></h2>
+            <span class="mutualFriends"></span>&nbsp;&nbsp; <img style="right:20PX" id="fbFriendsActive"/></div>
+          <div class="machesDetails">
+            <P><span id="profile_gen"></span>,<span class="colorRed" id="profile_age"></span> <span>yrs</span><span class="mapLocation"></span></P>
+            <p style="visibility:hidden">Level <span class="circle">111</span><span class="circle">111</span><span class="circle">111</span></p>
+            <!--<img style="right:30PX" src="themes/images/Message_Icon.png"/> --></div>
+        </li>
+      </ul>
+       <div class="mySports">
+        <h2>MY SPORTS</h2>
+      </div>
+      <div class="ui-grid-b">
+        <div class="ui-block-a"> <img src="themes/images/running.png"/>
+          <p>
+          
+          <ul class="circles">
+            <li class="circleGrayLvl" id="run_beg"></li>
+            <li class="circleGrayLvl" id="run_intr"></li>
+            <li class="circleGrayLvl" id="run_adv"></li>
+            <li class="circleGrayLvl" id="run_prof"></li>
+          </ul>
+          </p>
+          <h6  id="run_type">Beginner</h6>
+          <img class="paddingZero" src="themes/images/map_Arrow.png"/>
+          <p id="run_mapSelect"></p>
+        </div>
+        <div class="ui-block-b" > <img  src="themes/images/workout.png" style="padding:20px"/>
+          <p>
+          
+          <ul class="circles">
+            <li class="circleGrayLvl" id="work_beg"></li>
+            <li class="circleGrayLvl" id="work_intr"></li>
+            <li class="circleGrayLvl" id="work_adv"></li>
+            <li class="circleGrayLvl" id="work_prof"></li>
+          </ul>
+          </p>
+          <h6 id="work_type">Beginner</h6>
+          <img class="paddingZero" src="themes/images/map_Arrow.png"/>
+          <p id="work_mapSelect"></p>
+        </div>
+        <div class="ui-block-c"> <img src="themes/images/Cycling.png"/>
+          <p>
+          
+          <ul class="circles">
+            <li class="circleGrayLvl" id="cyl_beg"></li>
+            <li class="circleGrayLvl" id="cyl_intr"></li>
+            <li class="circleGrayLvl" id="cyl_adv"></li>
+            <li class="circleGrayLvl" id="cyl_prof"></li>
+          </ul>
+          </p>
+          <h6 id="cyl_type">Beginner</h6>
+          <img class="paddingZero" src="themes/images/map_Arrow.png"/>
+          <p id="cyl_mapSelect"></p>
+        </div>
+      </div>
+      <!-- /grid-b --> 
+      
+      <br/>
+      <br/>
+     
+      <div style="text-align:right" id="blockUsr"><img src="themes/images/block_1.png" onclick="blockuser()" id="blockUser"/><img src="themes/images/unblock.png" onclick="unBlockUser()" id="unblockUser"/></div>
+    </div>
+  </div>
+</div>
+<script>
+$(function()
+{
+// Create overlay and append to body:
+    $('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+			 $(".ui-block-a").hide();
+					 $(".ui-block-b").hide();
+					 $(".ui-block-c").hide();
+});
+$(document).ready(function()
+{
+	$('#overlay').show();
+	
+	$("#blockUser").hide();
+	$("#unblockUser").hide();
+	fbUserID = localStorage.getItem("cotrain");
+	userID = window.sessionStorage.getItem("usrID");
+	fbID = window.sessionStorage.getItem("fbID");
+	document.addEventListener('deviceready', function() 
+	{
+              FB.init({
+                  		appId: '533839336729739',
+                  		nativeInterface: CDV.FB,
+                  		status     : true, // check login status
+						cookie     : true, // enable cookies to allow the server to access the session
+                  		useCachedDialogs: false,
+						sharedSession:true
+              });
+              FB.getLoginStatus(handleStatusChange,true);
+			
+	});			
+
+		$.ajax({
+                 type: "GET",
+                 url: coTrainTestAPIURL + "GetUserDetails?uid="+userID,
+                 processData: false,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "jsonp",
+                 success: function (data) 
+				 {
+					 $("#profile_name").append(data.FullName);
+					 $("#profile_gen").append(data.Gender);
+					 $(".mapLocation").append(data.Location);
+					 $("#profile_age").append(data.Age);
+					 document.getElementById('profile_img').src = data.PhotoURL;
+						userFriends(fbID);
+				 }
+		});
+		$.ajax({
+                 type: "GET",
+                 url: coTrainTestAPIURL + "GetSportDetailsByUser?uid="+userID,
+                 processData: false,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "jsonp",
+                 success: function (data) 
+				 {
+					if(data.length !=0)
+					{
+						for(var i=0;i<data.length;i++)
+						{
+							sportConfig(data[i].SportID,data[i].SportLevelID,data[i].Location)
+						}
+					}
+					else
+					{
+						//alert('Sports Not Configured');
+					}
+					$('#overlay').hide();
+				 }
+		});
+		$.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL + "IsUserBlockedByMe?uid="+userID+"&bid="+fbUserID,
+					processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					async:false,
+                    success:function(data) 
+					{
+						if(data == false)
+						{
+							$("#blockUser").show();
+						}
+						else
+						{
+							$("#unblockUser").show();
+						}
+                    },
+                    error: function (result) 
+					{
+                        //alert("SubmitBlockedUser Error:" +result.status + ' ' +result.statusText);
+                    }
+   		});
+	
+});
+function userFriends(f_id)
+{
+	FB.api('/me/friends/'+f_id, function (response) 
+	{
+        if (response && !response.error) 
+		{
+            if (response.data.length == 0) 
+			{
+                    mutualfriends(f_id);
+            }
+            else 
+			{
+				document.getElementById('fbFriendsActive').src = "themes/images/FbFriends_Active.png";
+                  //$("#matchesName").append('<img style="right:30PX" src="themes/images/FbFriends_Active.png"/>');
+            }
+        }
+    });
+
+  	/* FB.api('/me/friends?fields=username', function (response)
+	 {
+            if (response.data) 
+			{
+                $.each(response.data, function (index, friend) 
+				{
+                    while (friend.id == f_id) 
+					{
+                        isFriendOrCount = -1;
+                      
+					   $('#matchID'+i).append('<img src="themes/images/FbFriends_Active.png"/>');
+					    break;
+                    }
+                })
+                if (isFriendOrCount == 0) 
+				{
+					 mutualfriends(f_id,i);
+                }
+
+            }
+			
+     });*/
+	//return isFriendOrCount; 
+}
+function mutualfriends(fri_id,i) 
+{
+    FB.api('/me/mutualfriends/' + fri_id, function (response) 
+	{
+        if (response && !response.error) 
+		{
+          //alert('mutual friends:'+response.data.length);
+		  document.getElementById('fbFriendsActive').src =  "themes/images/FbFriends_InActive.png";
+		  $(".mutualFriends").append(response.data.length);
+		}
+    }); 
+}
+function sportConfig(s_id,s_Lvl,s_loc)
+{
+	switch(s_id)
+		{
+			case 2:
+			{
+				$(".ui-block-a").show();
+				sportLevel(s_id,s_Lvl,s_loc)
+        
+			}break;
+			case 3:{
+					$(".ui-block-b").show();
+					sportLevel(s_id,s_Lvl,s_loc)
+				
+			}break;
+			case 5:{
+					$(".ui-block-c").show();
+					sportLevel(s_id,s_Lvl,s_loc)
+			}break;
+			
+		}
+}
+function sportLevel(spt_Id,spt_Lvl,spt_Loc)
+{
+	switch(spt_Lvl)
+		{
+			case 1:
+			{
+				if(spt_Id == 2)
+				{
+					$("#run_type").empty();
+					$("#run_type").append('Beginner');
+					$("#run_beg").css( {"background":"red","color":"red" });
+					$("#run_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 3)
+				{
+					$("#work_type").empty();
+					$("#work_type").append('Beginner');
+					$("#work_beg").css( {"background":"red","color":"red" });
+					$("#work_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 5)
+				{
+					$("#cyl_type").empty();
+					$("#cyl_type").append('Beginner');
+					$("#cyl_beg").css( {"background":"red","color":"red" });
+					$("#cyl_mapSelect").append(spt_Loc);
+					
+				}
+			}
+			break;
+			case 2:{
+				
+				if(spt_Id == 2)
+				{
+					$("#run_type").empty();
+					$("#run_type").append('Intermediate');
+					$("#run_beg,#run_intr").css( {"background":"red","color":"red" });
+					$("#run_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 3)
+				{
+					$("#work_type").empty();
+					$("#work_type").append('Intermediate');
+					$("#work_beg,#work_intr").css( {"background":"red","color":"red" });
+					$("#work_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 5)
+				{
+					$("#cyl_type").empty();
+					$("#cyl_type").append('Intermediate');
+					$("#cyl_beg,#cyl_intr").css( {"background":"red","color":"red" });
+					$("#cyl_mapSelect").append(spt_Loc);
+					
+				}
+			}break;
+			case 3:{
+				
+				if(spt_Id == 2)
+				{
+					$("#run_type").empty();
+					$("#run_type").append('Advanced');
+					$("#run_beg,#run_intr,#run_adv").css( {"background":"red","color":"red" });
+					$("#run_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 3)
+				{
+					$("#work_type").empty();
+					$("#work_type").append('Advanced');
+					$("#work_beg,#work_intr,#work_adv").css( {"background":"red","color":"red" });
+					$("#work_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 5)
+				{
+					$("#cyl_type").empty();
+					$("#cyl_type").append('Advanced');
+					$("#cyl_beg,#cyl_adv,#cyl_intr").css( {"background":"red","color":"red" });
+					$("#cyl_mapSelect").append(spt_Loc);
+					
+				}
+			}break;
+			case 4:{
+				
+				if(spt_Id == 2)
+				{
+					$("#run_type").empty();
+					$("#run_type").append('Professional');
+					$("#run_beg,#run_intr,#run_adv,#run_prof").css( {"background":"red","color":"red" });
+					$("#run_mapSelect").append(spt_Loc);
+				
+				}
+				else if(spt_Id == 3)
+				{
+					$("#work_type").empty();
+					$("#work_type").append('Professional');
+					$("#work_beg,#work_intr,#work_adv,#work_prof").css( {"background":"red","color":"red" });
+					$("#work_mapSelect").append(spt_Loc);
+					
+				}
+				else if(spt_Id == 5)
+				{
+					$("#cyl_type").empty();
+					$("#cyl_type").append('Professional');
+					$("#cyl_beg,#cyl_intr,#cyl_adv,#cyl_prof").css( {"background":"red","color":"red" });
+					$("#cyl_mapSelect").append(spt_Loc);
+				
+				}
+				
+			}break;
+		}
+}
+
+
+
+function blockuser()
+{
+		$.ajax({
+                    type: "POST",
+                   	url: coTrainTestAPIURL + "SubmitBlockedUser?uid="+userID+"&bid="+fbUserID,
+					processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					async:false,
+                    success:function(data) 
+					{
+						//alert('SubmitBlockedUser:'+data);
+						$("#unblockUser").hide();
+						$("#blockUser").show();
+
+						 window.location = "Matches.html";
+                    },
+                    error: function (result) 
+					{
+                        //alert("SubmitBlockedUser Error:" +result.status + ' ' +result.statusText);
+                    }
+   		});
+}
+
+function unBlockUser()
+{
+
+		$.ajax({
+                    type: "GET",
+                   	url: coTrainTestAPIURL + "SubmitUnblockUser?uid="+userID+"&bid="+fbUserID,
+					processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					async:false,
+                    success:function(data) 
+					{
+						//alert('SubmitUnblockUser:'+data);
+						$("#blockUser").hide();
+						$("#unblockUser").show();
+						 window.location = "Matches.html";
+                    },
+                    error: function (result) 
+					{
+                        //alert("SubmitBlockedUser Error:" +result.status + ' ' +result.statusText);
+                    }
+   		});
+		
+}
+
+</script>
+</body>
+</html>

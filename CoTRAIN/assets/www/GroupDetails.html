@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Group details</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/idangerous.swiper.css">
+<link rel="stylesheet" href="themes/normalize.css">
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="themes/new/style.css"/>
+<link rel="stylesheet" href="themes/new/style.mobile.css"/>
+<link rel="stylesheet" href="js/DatePicker/jquery.mobile.datepicker.css"/>
+<link rel="stylesheet" href="js/DatePicker/jquery-ui.css"/>
+<link rel="stylesheet" href="js/DatePicker/jquery-ui-timepicker-addon.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<script src="js/DatePicker/jquery.ui.datepicker.js"></script>
+<script src="js/DatePicker/jquery-ui-timepicker-addon.js"></script>
+<script id="mobile-datepicker" src="js/DatePicker/jquery.mobile.datepicker.js"></script>
+
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+
+<!--	DataBase Service Url	-->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+</head>
+<style>
+#usrImg {
+	width: 65px;
+	height: 65px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #FFF;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 10px;
+}
+.ui-datepicker-trigger {
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: 0;
+	background-color: white;
+}
+#group_nameEdit {
+	width: 200px;
+	text-align: left;
+}
+</style>
+<body>
+<div data-role="page" data-theme="a" id="swiperPage">
+  <div class="header" data-role="header"> <span class="open left"><a href="javascript:location.replace('./messages.html');"><img src="themes/images/back.png"/></a></span> <span class="title">Group Details</span> <span class="open right"><a onClick="saveGroupDetails()"><img src="themes/images/SaveIcon.png"/></a></span> </div>
+  <div data-role="content" data-theme="a"  class="content" style="height:100%">
+    <div class="SelectSportsGroupDetails"> <br/>
+      <br/>
+      <div class="groupSettings">
+        <fieldset class="ui-grid-e" style="border-bottom:1px solid #d2d2d2">
+          <div class="ui-block-a">GROUP NAME</div>
+          <div class="ui-block-b" style="color:red;font-weight:bold" id="group_name"> </div>
+          <div class="ui-block-b" style="color:red;font-weight:bold" id="group_nameEdit">
+            <input type="text" value="" id="txt_Groupname"/>
+          </div>
+        </fieldset>
+        <br/>
+        <fieldset class="ui-grid-e">
+          <div class="ui-block-a" >NEXT EVENT </div>
+          <div class="ui-block-b" id="spt_date">
+            <input type="hidden" id="dp" />
+            <p><img src="themes/images/calendar.png" align="left"  />
+              <label id="lblTrainDay" >Day</label>
+            </p>
+          </div>
+        </fieldset>
+        <br/>
+        <fieldset class="ui-grid-e">
+          <div class="ui-block-a" ></div>
+          <div class="ui-block-b" id="spt_time">
+            <input type="hidden" id="time"  />
+            <p><img src="themes/images/Clock.png" align="left" />
+              <label id="lblTrainTime" >Time</label>
+            </p>
+          </div>
+        </fieldset>
+      </div>
+      <br/>
+      <br/>
+      <div class="heading" style="text-align:left">
+        <h4>GROUP MEMBERS</h4>
+      </div>
+      <div class="groupSettings">
+        <ul class="machNames">
+        </ul>
+        <div class="buttonBackgroundGray" id="add_user">Add User</div>
+        <br/>
+        <div class="buttonBackgroundGray" id="leave_group">Leave Group</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+var sportId;
+var groupOwnerId;
+var groupUserId;
+var groupName;
+$(function()
+{
+	$('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+	
+	userID = localStorage.getItem("cotrain");
+	var gId = window.sessionStorage.getItem("groupID");
+	
+	$("#group_nameEdit").hide();
+		//********************	To Get Group details 	*********************//
+			$.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL + "GetGroupDetails?gid="+gId,
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					beforeSend: function(){$('#overlay').show();},
+                    success: function(data) 
+					{
+							groupName = data.GroupName;
+						$("#txt_Groupname").val(data.GroupName);
+						$("#group_name").append(data.GroupName);
+						$("#lblTrainDay").text(data.Date);
+						$("#lblTrainTime").text(data.Time);
+							sportId = data.SportID;
+							groupOwnerId = data.GroupOwnerID;
+							groupUserId = data.GroupID;
+									
+						$('#overlay').hide();
+                    },
+                    error: function (result) {
+                       // alert("GetGroupDetails Error:  " + result.status + '  ' + result.statusText);
+                    }
+        	});
+			//********************	To Get chat group users		*********************//
+			$.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL + "GetChatGroupUsers?grpid="+gId,
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					beforeSend: function(){$('#overlay').show();},
+                    success: function (data) 
+					{
+                        for (var i = 0; i < data.length; i++) 
+						{
+							$(".machNames").append('<li><div class="names"><div class="circular"><img src="'+data[i].PhotoURL+'" id="usrImg" width="70px"/></div><h2>'+data[i].UserName+'</h2></div></li>');
+                        }
+						$('#overlay').hide();
+                    },
+                    error: function (result) {
+                       // alert("GetChatGroupUsers Error:" + result.status + ' ' + result.statusText);
+                    }
+                });
+	
+});
+$(document).ready(function(e) 
+{
+    $("#dp").datepicker({                 
+                 changeMonth: true,
+                 changeYear: true,                 
+                 onSelect: function (dateText, inst) {
+									                     $("#lblTrainDay").text(dateText);
+                 									 }
+             });
+	$("#time").timepicker({
+				 timeFormat: 'HH:mm',
+				 currentText: 'Current Time',
+                 onSelect: function (dateText, inst) {
+                     									$("#lblTrainTime").text(dateText);
+                 									 }
+             });
+		$("#spt_date").click(function(){
+							
+			$("#dp").datepicker('show');
+		});
+		
+		$("#spt_time").click(function(){
+							
+			$("#time").datepicker('show');
+		});
+		
+
+		
+});
+
+$("#group_name").click(function() {
+    
+	$("#group_nameEdit").show();
+	$("#group_name").hide();
+	
+});
+	//********************	To save Group details 	*********************//
+function saveGroupDetails()
+{
+	$('#overlay').show();
+	var groupDetails = { "GroupID": groupUserId, "GroupName": $("#txt_Groupname").val(), "Date": $("#lblTrainDay").text(),
+                    "Time":$("#lblTrainTime").text(), "GroupOwnerID":groupOwnerId, "SportID":sportId
+                    };
+       $.ajax({
+                  type: "POST",
+                  url: coTrainTestAPIURL + "SubmitGroupDetails",
+                  data: JSON.stringify(groupDetails),
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  processData: false,
+				  async:false,
+                  success: function (data) 
+				  {
+					  if(data == 0)
+						{
+							alert('Group Already Exists')
+						}
+						else
+						{
+							$('#overlay').hide();
+							window.location = "messages.html";	
+						}
+					  					
+                  },
+                  error: function (result) 
+				  {
+                        //alert("SaveUserDetails Error:  " + result.status + ' ' + result.statusText);
+                   }
+       });	
+	
+}
+	//********************	To add users to Group  	*********************//
+$("#add_user").click(function(e) 
+{
+	$('#overlay').show();
+    userID = localStorage.getItem("cotrain");
+	var sport1 = {"uId":userID, "sId":sportId,"date":$("#group_date").text(), "time":$("#group_time").text()};
+        	window.sessionStorage.setItem("sport_usr1",JSON.stringify(sport1));
+		
+		$.ajax({
+                 type: "GET",
+                 url: coTrainTestAPIURL + "GetSportDetailsByUser?uid="+userID,
+                 processData: false,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "jsonp",
+                 success: function (data) 
+				 {
+					if(data.length !=0)
+					{
+						for(var i=0;i<data.length;i++)
+						{
+							if(data[i].SportID == sportId)
+							{
+								var sport2 = {"uId":userID,"sId":data[i].SportID,"gId":groupUserId,"lat":data[i].Latitude,"long":data[i].Longitude};
+        						window.sessionStorage.setItem("sport"+userID,JSON.stringify(sport2));
+							}
+						}
+						 $('#overlay').hide();   
+						 window.location = "Matches1.html";
+					}
+					else 
+					{
+						//alert('Sports Not Configured');
+					}
+				 }
+		});	
+
+});
+	//********************	To Leave the group 	*********************//
+$("#leave_group").click(function() 
+{
+	$('#overlay').show();
+	if(groupOwnerId == userID)
+	{ 
+			$.ajax({
+                   type: "POST",
+                   url: coTrainTestAPIURL + "DeleteChatGroup?gid="+groupOwnerId,
+                   processData: false,
+                   contentType: "application/json; charset=utf-8",
+                   dataType: "json",
+                   success: function (data)
+				   {
+					   $('#overlay').hide();
+						 window.location = "messages.html";
+				   },
+				   error: function (result)
+				   {
+						//alert("DeleteChatGroup Error:" + result.status + ' ' + result.statusText);
+				   }
+			});		
+	}
+	else if(groupUserId != userID)
+	{
+			$.ajax({
+                    type: "POST",
+                    url: coTrainTestAPIURL + "RemoveUserFromGroup?uid="+userID+"&gid="+groupUserId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    processData: false,
+                    success: function (data) 
+					{
+                        $('#overlay').hide();
+						window.location = "messages.html";
+                    },
+                    error: function(result) 
+					{
+                        //alert("RemoveUserFromGroup Error:" + result.status + ' ' + result.statusText);
+                    }
+          	});				
+	}    
+		
+});
+</script>
+</body>
+</html>

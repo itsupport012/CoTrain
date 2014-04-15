@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoTrain</title>
+<link rel="stylesheet" href="themes/smarana.css" type="text/css"/>
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" type="text/css"/>
+<link rel="stylesheet" href="themes/style.css" type="text/css"/>
+<link rel="stylesheet" href="fonts.css" type="text/css"/>
+<link rel="external" href="Slider.html"/>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- DataBaseService Url -->
+<script src="js/DbServiceUrl.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!-- cordova facebook plugin -->
+<script type="text/javascript" src="js/cdv-plugin-fb-connect.js"></script>
+<script type="text/javascript" src="js/facebook-js-sdk.js"></script>
+
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<!--<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>-->
+<!--<!-- QBVideoChat elements 
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+-->
+<script src ="js/QB/Config.js"></script>
+<!--<script src="js/QB/QBChatService.js"></script>-->
+<!--<script src="js/QB/qbchatroom.js"></script>-->
+
+
+</head>
+<style>
+#map-canvas {
+	position: absolute;
+	width: 96%;
+	height: 90%;
+	left: 2.5%;
+}
+#searchLoc{
+	text-align:left;
+	
+	
+}
+
+</style>
+<body>
+<!-- *************************************** LoginPage *************************************** -->
+<div data-role="page" data-theme="c" id="LoginPage">
+  <div class="loginLogo"><img src="themes/images/logo.png"/></div>
+  <div class="fbLogin"><a class="link" onClick="promptLogin()">
+    <div class="buttonBg"><img src="themes/images/fb_login.png"/></div>
+    </a> </div>
+</div>
+
+<!-- *************************************** SportsPage *************************************** -->
+<div data-role="page" data-theme="a" id="SportsPage" data-dom-cache="true">
+  <div data-role="header" data-position="fixed" >
+    <h1>SELECT SPORTS</h1>
+    <a class="saveButton" onClick="saveDetails()"><img src="themes/images/SaveIcon.png" /></a> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <div class="message">
+        <p><Span id="userName"> </Span>How do you train?</p>
+      </div>
+      <!-- ***************** Run *****************************-->
+      <p id="run_p"><a href="#run" data-inline="true"> <img src="themes/images/running.png" /> </a> </p>
+      <fieldset id="run" class="ui-grid-a">
+        <div class="ui-block-a"><a href="#" data-inline="true"><img src="themes/images/running_sel.png"/></a></div>
+        <div class="ui-block-b" >
+          <div class="activityDetails">
+            <p>
+            <ul class="circles" id="run_select">
+              <li class="circleGray" id="run_beg"></li>
+              <li class="circleGray" id="run_intr"></li>
+              <li class="circleGray" id="run_adv"></li>
+              <li class="circleGray" id="run_prof"></li>
+            </ul>
+            </p>
+            <br/>
+            <p id="run_type">Training Level</p>
+            <p><img src="themes/images/map_Arrow.png"/></p>
+            <p id="run_mapSelect">Select Location</p>
+          </div>
+        </div>
+      </fieldset>
+      
+      <!-- ***************** Workout *****************************-->
+      <p id="workout_p"><a href="#workout"  data-inline="true"><img src="themes/images/workout.png"/></a></p>
+      <fieldset id="workout" class="ui-grid-a">
+        <div class="ui-block-a"><a href="#" data-inline="true"  ><img src="themes/images/workout_sel.png" /></a></div>
+        <div class="ui-block-b" >
+          <div class="activityDetails">
+            <p>
+            <ul class="circles" id="work_select">
+              <li class="circleGray" id="work_beg"></li>
+              <li class="circleGray" id="work_intr"></li>
+              <li class="circleGray" id="work_adv"></li>
+              <li class="circleGray" id="work_prof"></li>
+            </ul>
+            </p>
+            <br/>
+            <p id="work_type">Training Level</p>
+            <p><img src="themes/images/map_Arrow.png"/></p>
+            <p id="work_mapSelect">Select Location</p>
+          </div>
+        </div>
+      </fieldset>
+      <!-- ***************** cycling *****************************-->
+      <p id="cycle_p"><a href="#cycle" data-inline="true"><img src="themes/images/Cycling.png"/></a></p>
+      <fieldset id="cycle" class="ui-grid-a">
+        <div class="ui-block-a"><a href="#" data-inline="true" ><img src="themes/images/cycling_sel.png" /></a></div>
+        <div class="ui-block-b" >
+          <div class="activityDetails">
+            <p>
+            <ul class="circles" id="cyl_select">
+              <li class="circleGray" id="cyl_beg"></li>
+              <li class="circleGray" id="cyl_intr"></li>
+              <li class="circleGray" id="cyl_adv"></li>
+              <li class="circleGray" id="cyl_prof"></li>
+            </ul>
+            </p>
+            <br/>
+            <p id="cyl_type">Training Level</p>
+            <p><img src="themes/images/map_Arrow.png"/></p>
+            <p id="cyl_mapSelect">Select Location</p>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</div>
+
+<!-- ***************** maps page *****************************-->
+
+<div data-role="page" data-theme="a" id="mapPage" data-dom-cache="true">
+  <div data-role="header" data-position="fixed">
+    <h1>MAP</h1>
+    <a  class="backButton" onClick="goback()"><img src="themes/images/back.png" /></a> <a href="#" data-transition="slide" data-inline="true" class="saveButton" onClick="showAddress()"><img src="themes/images/SaveIcon.png" /></a> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <input type="search" name="search" id="searchLoc" value="" placeholder="Where do you train?" class="controls" />
+    </div>
+    <div id="map-canvas"> 
+      <!-- map loads here... --> 
+    </div>
+  </div>
+</div>
+<script src="js/main.js" type="text/javascript"></script>
+</body>
+</html>

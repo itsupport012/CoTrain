@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find Partner</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="js/DatePicker/jquery.mobile.datepicker.css"/>
+<link rel="stylesheet" href="js/DatePicker/jquery-ui.css"/>
+<link rel="stylesheet" href="js/DatePicker/jquery-ui-timepicker-addon.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<script src="js/DatePicker/jquery.ui.datepicker.js"></script>
+<script src="js/DatePicker/jquery-ui-timepicker-addon.js"></script>
+<script id="mobile-datepicker" src="js/DatePicker/jquery.mobile.datepicker.js"></script>
+
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+
+<!--	DataBase Service Url 	-->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+</head>
+<style>
+.ui-datepicker-trigger {
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: 0;
+	background-color: white;
+}
+.Spacing {
+	margin-bottom: 10px;
+}
+</style>
+<body>
+<div data-role="page" data-theme="a">
+  <div data-role="header" data-position="inline">
+    <h1>FIND PARTNER</h1>
+    
+    <a href="javascript:location.replace('./Slider.html');" data-transition="fade" data-inline="true" class="backButton"><img src="themes/images/back.png" /></a></div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <p id="spt_img"></p>
+      <br/>
+      <br/>
+      <fieldset class="ui-grid-e">
+        <div class="ui-block-a Spacing">
+          <p>
+          <ul class="circles" id="sportLvl">
+            <li class="circleGray" id="spt_beg"></li>
+            <li class="circleGray" id="spt_intr"></li>
+            <li class="circleGray" id="spt_adv"></li>
+            <li class="circleGray" id="spt_prof"></li>
+          </ul>
+          </p>
+        </div>
+        <div class="ui-block-b Spacing" >
+          <p id="spt_type"></p>
+        </div>
+      </fieldset>
+      <fieldset class="ui-grid-e">
+        <div class="ui-block-a Spacing"><img src="themes/images/map_Arrow.png"/></div>
+        <div class="ui-block-b Spacing" >
+          <p id="spt_loc"></p>
+        </div>
+      </fieldset>
+      <fieldset class="ui-grid-e">
+        <div class="ui-block-a Spacing">
+          <p id="spt_date1" ><img src="themes/images/calendar.png"  /> </p>
+        </div>
+        <div  class="ui-block-b Spacing">
+          <input type="hidden" id="dp" class="ui-block-a" />
+          <p id="spt_date2" >
+            <label id="lblTrainDay" >Day</label>
+          </p>
+        </div>
+      </fieldset>
+      <fieldset class="ui-grid-e">
+        <div class="ui-block-a">
+          <p id="spt_time1"><img src="themes/images/Clock.png" /></p>
+        </div>
+        <div class="ui-block-b" >
+          <input type="hidden" id="time" class="ui-block-a" />
+          <p id="spt_time2">
+            <label id="lblTrainTime" >Time</label>
+          </p>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <div style="text-align:center;position:absolute;bottom:0px;left: 50%;margin-left: -66px; z-index:999;" id="findPartner"> <img src="themes/images/FindPartners.png"/> </div>
+</div>
+<script>
+
+var usrSportArr = new Array();
+var sportType;
+var passUrl;
+$(document).ready(function(e) 
+{
+	$('#overlay').show();
+    $("#dp").datepicker({                 
+                 changeMonth: true,
+                 changeYear: true,                 
+                 onSelect: function (dateText, inst) {
+									                     $("#lblTrainDay").text(dateText);
+														 $("#spt_date1").replaceWith('<img src="themes/images/calendar_Sel.png"/>');
+                 									 }
+             });
+	$("#time").timepicker({
+				 timeFormat: 'HH:mm',
+				 currentText: 'Current Time',
+                 onSelect: function (dateText, inst) {
+                     									$("#lblTrainTime").text(dateText);
+														$("#spt_time1").replaceWith('<img src="themes/images/clock_Sel.png" />');
+                 									 }
+             });
+		$("#spt_date1").click(function(){				
+			$("#dp").datepicker('show');
+		});
+		$("#spt_date2").click(function(){				
+			$("#dp").datepicker('show');
+		});
+		$("#spt_time1").click(function(){				
+			$("#time").datepicker('show');
+		});
+		$("#spt_time2").click(function(){				
+			$("#time").datepicker('show');
+		});
+	$('#overlay').hide();
+		
+});
+$(function()
+{
+	$('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: 'white url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+	
+	sportsDetailsArr = JSON.parse(window.localStorage.getItem("SportsDetailsArr"));
+	 userID = localStorage.getItem("cotrain");
+	 data = window.sessionStorage.getItem("sType");
+	
+		if (data != null) 
+		{
+			if(data == 'Run')
+			{
+				sportType = 2;	
+				$("#spt_img").append('<img src="themes/images/running_sel.png"/>');
+			}
+			else if(data == 'Workout')
+			{
+				sportType = 3;	
+				$("#spt_img").append('<img src="themes/images/workout_sel.png"/>');
+			}
+			else if(data == 'Cycle')
+			{
+				sportType = 5;	
+				$("#spt_img").append('<img src="themes/images/cycling_sel.png"/>');
+			}
+		}
+		for(var i=0;i<sportsDetailsArr.length;i++)
+		{
+			if(sportsDetailsArr[i].SportID == sportType)
+			{
+				$("#spt_loc").empty();
+				sportLevel(sportsDetailsArr[i].SportLevelID);
+				$("#spt_loc").append(sportsDetailsArr[i].Location);
+				var sport = {"uId":userID,"sId":sportsDetailsArr[i].SportID,"lat":sportsDetailsArr[i].Latitude,"long":sportsDetailsArr[i].Longitude};
+        		window.sessionStorage.setItem("sport"+userID,JSON.stringify(sport));
+			}
+		}
+	
+});
+
+function sportLevel(e)
+{
+	$("#spt_type").empty();
+		switch(e)
+		{
+			case 1:
+			{
+				$("#spt_type").append('Beginner');
+				$("#spt_beg").css( {"background":"red","color":"red" });
+			}break;
+			case 2:{
+				$("#spt_type").append('Intermediate');
+				$("#spt_beg,#spt_intr").css( {"background":"red","color":"red" });
+				
+			}break;
+			case 3:{
+				$("#spt_type").append('Advanced');
+				$("#spt_beg,#spt_intr,#spt_adv").css( {"background":"red","color":"red" });
+				
+			}break;
+			case 4:{
+				$("#spt_type").append('Professional');
+				$("#spt_beg,#spt_intr,#spt_adv,#spt_prof").css( {"background":"red","color":"red" });
+			}break;
+		}
+}
+	
+$("#findPartner").click(function()
+{
+	if($("#lblTrainDay").text() != 'Day' && $("#lblTrainTime").text() != 'Time')
+	{
+		var sport1 = {"uId":userID, "sId":sportType,"date":$("#lblTrainDay").text(), "time":$("#lblTrainTime").text()};
+        	window.sessionStorage.setItem("sport_usr",JSON.stringify(sport1));
+			
+		 window.location.href = "Matches.html";
+	}
+	else
+	{
+		alert("Date And Time Mandatory");
+	}
+});
+
+</script>
+</body>
+</html>

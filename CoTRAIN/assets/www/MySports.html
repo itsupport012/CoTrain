@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Sports</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/idangerous.swiper.css">
+<link rel="stylesheet" href="themes/normalize.css">
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="themes/new/style.css"/>
+<link rel="stylesheet" href="themes/new/style.mobile.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+
+<!-- DataBaseService Url -->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+</head>
+<body>
+<div data-role="page" data-theme="a" id="swiperPage">
+  <div class="panel left snap-drawer" data-role="panel" data-position="left" data-display="push" id="panel-01">
+    <ul>
+      <li><a href="javascript:location.replace('./MyProfile.html');" id="UserNam"><img src="themes/images/user.png"></a></li>
+      <li><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/Find.png"> Find Partners</a></li>
+      <li><a href="javascript:location.replace('./MySports.html');"><img src="themes/images/MySports.png">My Sports</a></li>
+       <li><a href="javascript:location.replace('./messages.html');"><img src="themes/images/Messages.png"> Messages</a></li>
+      <br>
+      <br>
+      <br>
+      <li><a href="javascript:location.replace('./Settings.html');"><img src="themes/images/Settings.png">Settings</a></li>
+      <li><a href="javascript:location.replace('./Feedback.html');"><img src="themes/images/FeedBack.png">Feedback</a></li>
+    </ul>
+  </div>
+  <div class="header" data-role="header"> <span class="open left"><a href="#panel-01"><img src="themes/images/open.png"/></a></span> <span class="title">MY sports</span> <span class="open right"><a href="javascript:location.replace('./SelectSports.html');"><img src="themes/images/Edit.png" /></a></span> </div>
+  <div data-role="content" data-theme="a"  class="content" style="height:100%">
+    <div class="SelectSports">
+      <p><a id="run_img"><img src="themes/images/running.png"/></a></p>
+      <p><a id="work_img"><img src="themes/images/workout.png"/></a></p>
+      <p><a id="cyl_img"><img src="themes/images/Cycling.png"/></a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+
+$(function()
+{
+	var spt_Id;
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	$("#UserNam").append(fbUserName);
+	
+	sportsDetailsArr = JSON.parse(window.localStorage.getItem("SportsDetailsArr"));
+	for(var i=0;i<sportsDetailsArr.length;i++)
+	{
+		sportConfig(sportsDetailsArr[i].SportID);
+	}
+function sportConfig(spt_Id)
+{
+		if(spt_Id == 2)
+		{
+			$("#run_img").replaceWith('<img src="themes/images/running_sel.png"/>');
+		}
+		
+		if(spt_Id == 3)
+		{
+			$("#work_img").replaceWith('<img src="themes/images/workout_sel.png"/>');
+		}
+		
+		if(spt_Id == 5)
+		{
+			$("#cyl_img").replaceWith('<img src="themes/images/cycling_sel.png"/>');
+		}
+}
+	
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matches</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="js/listbox.css"/>
+<link rel="stylesheet" href="themes/new/style.mobile.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!--	DataBase Service Url 	-->
+<script src="js/DbServiceUrl.js"></script>
+
+<!-- cordova facebook plugin -->
+<script type="text/javascript" src="js/cdv-plugin-fb-connect.js"></script>
+<!-- facebook js sdk -->
+<script type="text/javascript" src="js/facebook-js-sdk.js"></script>
+<!--	DataBase Service Url 	-->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+
+<script src="js/msgStorage.js"></script>
+
+</head>
+<style>
+#profile_img {
+	width: 65px;
+	height: 65px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #FFF;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 10px;
+}
+.center {
+	background: #e2e2e2;
+	border-bottom: 2px solid #999 !important;
+}
+.chat {
+	z-index: 99999;
+}
+</style>
+<body>
+<div data-role="page" data-theme="a">
+  <div class="panel left snap-drawer" data-role="panel" data-position="left" data-display="push" id="panel-01">
+    <ul>
+      <li><a href="javascript:location.replace('./MyProfile.html');" id="UserNam"><img src="themes/images/user.png"></a></li>
+      <li><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/Find.png"> Find Partners</a></li>
+      <li><a href="javascript:location.replace('./MySports.html');"><img src="themes/images/MySports.png">My Sports</a></li>
+      <li><a href="javascript:location.replace('./messages.html');"><img src="themes/images/Messages.png"> Messages</a></li>
+      <br>
+      <br>
+      <br>
+      <li><a href="javascript:location.replace('./Settings.html');"><img src="themes/images/Settings.png">Settings</a></li>
+      <li><a href="javascript:location.replace('./Feedback.html');"><img src="themes/images/FeedBack.png">Feedback</a></li>
+    </ul>
+  </div>
+  <div class="header" data-role="header"> 
+  <span class="open left"><a href="#panel-01"><img src="themes/images/open.png"/></a></span> 
+  <span class="title">MATCHES</span> 
+  <span class="open right"><a  onClick="createGroup()"><img src="themes/images/Groups.png" id="createGroup_img"/></a></span> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports1">
+      <ul class="matches" id="ul_id">
+      </ul>
+    </div>
+  </div>
+</div>
+<script>
+
+var queryString = new Array();
+var userDetails = new Array();
+var userdetailArr = new Array();
+var chatUserArr = new Array();
+var uID;
+var sID;
+var lat;
+var long;
+$(function()
+{
+	// Create overlay and append to body:
+    $('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+});
+	//********************	App user Login Details	*********************//
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	$("#UserNam").append(fbUserName);
+document.addEventListener('deviceready', function() 
+{
+              FB.init({
+                  		appId: '533839336729739',
+                  		nativeInterface: CDV.FB,
+                  		status     : true, // check login status
+						cookie     : true, // enable cookies to allow the server to access the session
+                  		useCachedDialogs: false,
+						sharedSession:true
+              });
+              FB.getLoginStatus(handleStatusChange,true);
+			
+});		
+	//********************	check FB login status of user	*********************//	
+function handleStatusChange(response) 
+{
+  if (response.authResponse) 
+  {
+	 //makeCall(response);
+  } 
+  else 
+  {
+    //alert('No Response');
+  }
+}
+	//********************	Get the find Partners User details 	*********************//
+$(document).ready(function() 
+{
+	$('#overlay').show();
+	$("#createGroup_img").hide();
+	userID = localStorage.getItem("cotrain");
+	var obj = $.parseJSON( window.sessionStorage.getItem("sport"+userID) );
+	 if(obj.uId != null ) 
+	 {
+		   uID = obj.uId;
+		   sID = obj.sId;
+		   lat = obj.lat;
+		   long = obj.long;
+          //alert(uID+'\n'+sID+'\n'+lat+'\n'+long);
+		   $.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL+"FindPartners?uid="+uID+"&sid="+sID+"&lng="+long+"&lat="+lat,
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) 
+							{    
+								
+								userdetailArr = [ ];
+								userdetailArr = data;                    
+                        		for(var i=0; i< data.length; i++)
+								{
+										userFriends(data[i].FacebookID,i);// to check the user is friend or not
+
+										$("#ul_id").append('<li id="'+i+'" onclick= userSelect('+i+','+data[i].UserID+','+data[i].QuickbloxUserID+') ><div class="matchesName" id="matchID'+i+'"><div class="circular" onclick= clickProfile('+data[i].UserID+','+data[i].FacebookID+')><img src="'+data[i].PhotoURL+'"id="profile_img"/></div><h2 id="usr_Name">'+data[i].UserName+'</h2></div><div class="machesDetails"><P><span id="usr_Gender">'+data[i].Gender+'</span>,<span class="colorRed" id="usr_Age">'+data[i].Age+'</span><span>yrs</span><span class="mapLocation" id="usr_Loc">'+data[i].Location+'</span></P><p>Level<ul id="usr_SptLevel'+i+'"></ul><span id="usr_distance">Distance(kms):</span><span class="colorRed" id="usr_dis">'+data[i].Distance+'</span></p><img id = '+data[i].QuickbloxUserID+' onclick =chat('+i+') class="chat" alt = '+data[i].UserName+' src="themes/images/Message_Icon.png"/></div></li>');
+										
+										$('#usr_SptLevel'+i+'').append('<li class="circleGray" id="spt_beg"></li><li class="circleGray" id="spt_intr"></li><li class="circleGray" id="spt_adv"></li><li class="circleGray" id="spt_prof"></li>');
+										
+         								sportLevel(data[i].SportLevel);//sport level of a user
+								} 
+								$('#overlay').hide();   
+								$('#ul_id').listview('refresh');                         
+                    		},
+                    error: function (result)
+					{
+                        //alert("GetUserDetails Error:  " + result.status + '   ' + result.statusText);
+                    }
+                });
+       }
+
+});
+	//********************	chat with the selected user	*********************//
+function chat(e)
+{
+	 window.sessionStorage.setItem("selectedUserId", userdetailArr[e].QuickbloxUserID);
+	 window.sessionStorage.setItem("selectedUserName", userdetailArr[e].UserName);
+	 window.sessionStorage.setItem("selectedUserPhoto",userdetailArr[e].PhotoURL);
+	 window.sessionStorage.setItem("backPage","Matches.html");
+
+	window.location = 'OneToOneChat.html';
+}
+	//********************	To check user is friend or not to owner in facebook list*********************//
+function userFriends(f_id,i)
+{
+	FB.api('/me/friends/'+f_id, function (response) 
+	{
+        if (response && !response.error) 
+		{
+            if (response.data.length == 0) 
+			{
+                    mutualfriends(f_id,i);
+            }
+            else 
+			{
+                  $('#matchID'+i).append('<img src="themes/images/FbFriends_Active.png"/>');
+            }
+        }
+    });
+}
+	//********************	To find the mutual friends between owner and user *********************//
+function mutualfriends(fri_id,i) 
+{
+    FB.api('/me/mutualfriends/' + fri_id, function (response) 
+	{
+        if (response && !response.error) 
+		{
+		  $('#matchID'+i).append('<span class="mutualFriends">'+response.data.length+'</span><img src="themes/images/FbFriends_InActive.png"/>');
+		}
+    }); 
+}
+
+	//********************	Selecting no of users to create group chat	*********************//
+function userSelect(i,id,Qb_id)
+{
+	//alert(i+'and'+id+'and'+Qb_id);
+	if($("#"+i).hasClass("selected")==false)
+	{
+  		 $("#"+i).addClass("selected");
+		 userDetails.push(id);
+		 chatUserArr.push(Qb_id);
+		 $("#createGroup_img").show();
+	}
+	else
+	{
+ 		$("#"+i).removeClass("selected");
+		userDetails.pop(id);
+		chatUserArr.pop(Qb_id);
+		if(userDetails.length == 0)
+		{
+			$("#createGroup_img").hide();
+		}
+	}
+}
+
+function sportLevel(e)
+{
+	$("#spt_type").empty();
+		switch(e)
+		{
+			case "Beginner":{
+								$("#spt_beg").css( {"background":"red","color":"red" });
+			}break;
+			case "Intermediate":{
+								$("#spt_beg,#spt_intr").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "Advanced":{
+								$("#spt_beg,#spt_intr,#spt_adv").css( {"background":"red","color":"red" });
+				
+			}break;
+			case "Professinal":{
+								$("#spt_beg,#spt_intr,#spt_adv,#spt_prof").css( {"background":"red","color":"red" });
+			}break;
+		}
+}
+	//********************	create a group and submit details to server DB	*********************//
+function createGroup()
+{
+	var groupId;
+	var groupNam;
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	 var name = fbUserName.split(' ');
+     var obj = jQuery.parseJSON( window.sessionStorage.getItem("sport_usr"));
+	 		if(obj.sId == 2)
+			{
+				var sportType = 'Run';	
+				groupNam = name[0]+'_'+sportType+'_'+obj.date;
+			}
+			else if(obj.sId == 3)
+			{
+				var sportType = 'Workout';	
+				groupNam = name[0]+'_'+sportType+'_'+obj.date;
+			}
+			else if(obj.sId == 5)
+			{
+				var sportType = 'Cycle';	
+				groupNam = name[0]+'_'+sportType+'_'+obj.date;
+			}
+	 var groupDetails = { "GroupID": 0, "GroupName": groupNam, "Date": obj.date,
+                    "Time":obj.time, "GroupOwnerID": obj.uId, "SportID": obj.sId
+                    };
+			
+		if(userDetails.length !=0)
+		{
+                $.ajax({
+                    type: "POST",
+                    url: coTrainTestAPIURL + "SubmitGroupDetails",
+                    data: JSON.stringify(groupDetails),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    processData: false,
+					async:false,
+                    success: function (data) 
+					{
+						//alert('group id:'+data[0]);
+						//alert('chat:'+data[1]);
+						if(data[0] == -1)
+						{
+							alert('Group Already Exists')
+							groupId = '';
+						}
+						else if(data[0] == 0)
+						{
+							alert('ChatRoom not avaiable');
+						}
+						else
+						{
+							groupId = data[0];
+							QBChatRoom = data[1];
+							window.sessionStorage.setItem("QBChatRoom",QBChatRoom);
+							window.sessionStorage.setItem("groupID",groupId);
+						}
+                    },
+                    error: function (result) {
+                        //alert("SubmitGroupDetails Error:  " + result.status + ' ' + result.statusText);
+                    }
+                });
+					//********************	group with user's list	*********************//
+		if(groupId !=0)
+		{
+					var groupUsers = { "GroupID": groupId, "UserIDs":userDetails };
+					//alert(JSON.stringify(groupUsers));
+                	$.ajax({
+                    		type: "POST",
+                    		url: coTrainTestAPIURL + "SubmitGroupUsers",
+                    		data: JSON.stringify(groupUsers),
+                    		contentType: "application/json; charset=utf-8",
+                    		dataType: "json",
+                    		processData: false,
+                    		success: function (data) 
+							{
+                        		alert('Group Created');
+								window.localStorage.setItem("qbChatUsers",JSON.stringify(chatUserArr));
+    							window.location.href = "GroupChat.html";
+           						
+                   			},
+                    		error: function (result) {
+                        			//alert("SubmitGroupUsers Error:" + result.status + ' ' + result.statusText);
+                   			}
+                	});
+				}
+		}
+		else
+		{
+			alert('Select User To Create Group');
+		}
+	
+}
+	//********************	view profile of selected user	*********************//
+function clickProfile(p,f_id)
+{
+	 window.sessionStorage.setItem("usrID", p);
+	 window.sessionStorage.setItem("fbID",f_id);
+	  
+     window.location.href = "ViewProfile.html";
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Location</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/idangerous.swiper.css">
+<link rel="stylesheet" href="themes/normalize.css">
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="themes/new/style.css"/>
+<link rel="stylesheet" href="themes/new/style.mobile.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!--		DataBase Service Url-->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+
+<style>
+#profile_img {
+	width: 65px;
+	height: 65px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	background: #FFF;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 1px;
+	left: 12px;
+}
+</style>
+</head>
+
+<body>
+<div data-role="page" data-theme="a">
+  <div data-role="header" data-position="inline"> <span class="open left"><a href="javascript:location.replace('./MyProfile.html');"><img src="themes/images/back.png"/></a></span> <span class="title">MY PROFILE</span> <span class="open right"><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/SaveIcon.png" /></a></span> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports"> <br/>
+      <ul class="matches">
+        <li class="selected">
+          <div class="matchesName" style="background:#fff;;margin-left:0px;">
+            <div class="circular" style="margin-left:2px;"><img id="profile_img"/></div>
+            <h2 style="color:red;margin-left:73px;" id="profile_name"></h2>
+          </div>
+          <div class="machesDetails" style="visibility:hidden">
+            <P><span>F</span>,<span class="colorRed">24</span> <span>yrs</span><span class="mapLocation">Indiranagar</span></P>
+            <p style="visibility:hidden">Level <span class="circle">111</span><span class="circle">111</span><span class="circle">111</span></p>
+          </div>
+        </li>
+      </ul>
+      
+      <div class="ui-grid-e profileEdit">
+        <div class="ui-block-a">
+          <h3>AGE</h3>
+        </div>
+        <div class="ui-block-b">
+          <h3 class="colorRed" id="profile_age"></h3>
+        </div>
+      </div>
+      <div class="ui-grid-e profileEdit">
+        <div class="ui-block-a">
+          <h3>GENDER</h3>
+        </div>
+        <div class="ui-block-b">
+          <h3 class="colorRed" id="profile_gen"></h3>
+        </div>
+      </div>
+      <div class="ui-grid-e profileEdit">
+        <div class="ui-block-a">
+          <h3>LOCATION</h3>
+        </div>
+        <div class="ui-block-b">
+          <h3 class="colorRed" id="mapLocation"></h3>
+        </div>
+      </div>
+      <div style="clear:both"></div>
+      <br/>
+      <div class="mySports" >
+        <h2>MY SPORTS</h2>
+        <img src="themes/images/Edit_gray.png" style="float: right;
+margin-top: -45px;" id="editSport"/> </div>
+    </div>
+  </div>
+</div>
+<script>
+
+$(function(){
+	userID = localStorage.getItem("cotrain");
+	userDetails = JSON.parse(window.localStorage.getItem("UserDetails"));
+
+	$("#profile_name").append(userDetails.FullName);
+	$("#profile_gen").append(userDetails.Gender);
+	$("#mapLocation").append(userDetails.Location);
+	$("#profile_age").append(userDetails.Age);
+	document.getElementById('profile_img').src = userDetails.PhotoURL;
+	
+	/*$.ajax({
+                 type: "GET",
+                 url: coTrainTestAPIURL + "GetUserDetails?uid="+userID,
+                 processData: false,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "jsonp",
+				 beforeSend: function(){$.mobile.loading('show',{text:'Loading',textVisible: true});},
+				 complete: function(){$.mobile.loading('hide');},
+				 async:false,
+                 success: function (data) 
+				 {
+					 //alert(data);
+					 $("#profile_name").append(data.FullName);
+					 var name = data.FullName.split(' ');
+	  				 var usrName = name[0];
+					 $("#profile_name1").append(usrName);
+					 $("#profile_gen").append(data.Gender);
+					 $("#mapLocation").append(data.Location);
+					 $("#profile_age").append(data.Age);
+					 document.getElementById('profile_img').src = data.PhotoURL;
+
+				 }
+	});*/
+});
+$("#editSport").click(function(e){
+	
+	event.preventDefault();
+	javascript:location.replace('./SelectSports.html');
+   
+});
+</script>
+</body>
+</html>

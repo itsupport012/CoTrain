@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Messages</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/idangerous.swiper.css">
+<link rel="stylesheet" href="themes/normalize.css">
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="themes/new/style.css"/>
+<link rel="stylesheet" href="themes/new/style.mobile.css"/>
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+
+<!-- DataBaseService Url -->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+<!--	sqlite database -->
+<script src="js/msgStorage.js"></script>
+</head>
+<style>
+#sportImg {
+	width: 65px;
+	height: 65px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+	float: left;
+	margin-top: 4px;
+	left: 10px;
+	background-position-x: -8px;
+	background-position-y: -7px;
+}
+#msgIcon{
+	z-index:99999 !important;	
+}
+</style>
+<body>
+<div data-role="page" data-theme="a">
+  <div class="panel left snap-drawer" data-role="panel" data-position="left" data-display="push" id="panel-01">
+    <ul>
+      <li><a href="javascript:location.replace('./MyProfile.html');" id="UserNam"><img src="themes/images/user.png"></a></li>
+      <li><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/Find.png"> Find Partners</a></li>
+      <li><a href="javascript:location.replace('./MySports.html');"><img src="themes/images/MySports.png">My Sports</a></li>
+      <li><a href="javascript:location.replace('./messages.html');"><img src="themes/images/Messages.png"> Messages</a></li>
+      <br>
+      <br>
+      <br>
+      <li><a href="javascript:location.replace('./Settings.html');"><img src="themes/images/Settings.png">Settings</a></li>
+      <li><a href="javascript:location.replace('./Feedback.html');"><img src="themes/images/FeedBack.png">Feedback</a></li>
+    </ul>
+  </div>
+  <div class="header" data-role="header"> <span class="open left"><a href="#panel-01"><img src="themes/images/open.png"/></a></span> <span class="title">Messages</span> <span class="open right"><a href="#panel-02"><!--<img src="themes/images/Messages.png" />--></a></span> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports1">
+      <ul class="matches" id="groups">
+        <!-- <li>
+          <div class="matchesName">
+            <div class="circularCycle"></div>
+            <h2>GROUP NAME</h2>
+            <img src="themes/images/message_Active.png"/> </div>
+          <div class="machesDetails">
+            <P><span>Next Event:</span><span class="colorRed">19 Februray,</span><span class="colorRed">16:00</span></P>
+            <p><span>*</span> Rupa Where everyone meeting</p>
+          </div>
+        </li>-->
+       
+      </ul>
+    </div>
+  </div>
+</div>
+<script src="themes/idangerous.swiper-2.0.min.js"></script> 
+<script>
+
+$(function()
+{
+	
+	// Create overlay and append to body:
+    $('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+	
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	$("#UserNam").append(fbUserName);
+	
+			$.ajax({
+                    type: "GET",
+                    url: coTrainTestAPIURL + "GetGroupsByUser?uid="+userID,
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+					beforeSend: function(){$('#overlay').show();},
+					async:false,
+                    success: function(data) 
+					{
+						groupList = data;
+						for(var i=0;i<data.length;i++)
+						{
+							$("#groups").append('<li onclick= "clickGroup('+data[i].GroupID+')"><div class="matchesName"><div id="spt_id'+i+'"></div><h2>'+data[i].GroupName+'</h2><img src="themes/images/message_Active.png" id="msgIcon'+i+'" onclick="groupChat(\''+data[i].QBChatRoomName+'\','+data[i].GroupID+','+i+')"/></div><div class="machesDetails"><P><span>Next Event:</span><span class="colorRed">'+data[i].Date+',</span><span class="colorRed">'+data[i].Time+'</span></P><p><span></span></p></div></li>');	
+						
+							if(data[i].SportID == 2)
+							{
+								$('#spt_id'+i+'').prepend('<img id="sportImg" src="themes/images/Run_Active.png"/>')
+							}
+							else if(data[i].SportID == 3)
+							{
+								$('#spt_id'+i+'').prepend('<img id="sportImg" src="themes/images/Workout_Active.png"/>')
+							}
+							else if(data[i].SportID == 5)
+							{
+								$('#spt_id'+i+'').prepend('<img id="sportImg" src="themes/images/Cycle_Active.png"/>')
+							}
+						}
+                     	$('#overlay').hide();
+                    },
+                    error: function (result) {
+                        //alert("GetGroupsByUser Error:  " + result.status + '   ' + result.statusText);
+                    }
+         	});
+				/*groupMsg =  $.parseJSON(window.localStorage.getItem("groupMessages"));
+				for(var i=0;i<groupMsg.length;i++)
+				{
+					//alert(groupMsg[i].groupId+'  and  '+groupList[i].GroupID)
+					if(groupMsg[i].groupId == groupList[i].GroupID)
+					{
+						$('#msgIcon'+i+'').attr('src',"themes/images/message_Active.png");
+					}
+				
+				}*/
+				var localFromUserArr = new Array();
+				CoTRAINDB.transaction(function (t) 
+				{
+					t.executeSql("SELECT * FROM privateChat", [], function (t, results) 
+					{
+						for (var i=0; i<results.rows.length; i++) 
+						{
+							var rowData = results.rows.item(i);
+							from_id = rowData.FromUserid;
+							var html = '<li><div class="matchesName"><div><img id="sportImg" src="'+rowData.FromUserPhoto+'"/></div><h2>'+rowData.FromUserName+'</h2><img src="themes/images/message_Active.png" onclick="privateChat('+from_id+',\''+rowData.FromUserName+'\',\''+rowData.FromUserPhoto+'\')"/></div><div class="machesDetails"><P><span>'+rowData.ChatMessage+'</span></P><p><span></span></p></div></li>';	
+					$("#groups").append(html);
+						}
+					});
+					t.executeSql("SELECT * FROM privateChatNotify", [], function (t, results) 
+					{
+						for (var i=0; i<results.rows.length; i++) 
+						{
+							var rowData = results.rows.item(i);
+							localFromUserArr.push(rowData);
+						}
+						alert('localFromUserArr:'+localFromUserArr.length);
+						//alert(JSON.stringify(localFromUserArr));
+					});
+					
+				});
+				
+		QB.init(config.Appid, config.AuthKey, config.AuthSec);
+		
+		QB.createSession({login: Owner.user, password: Owner.pass}, function(err, result) 
+		{
+			if (err) 
+			{
+				console.log(err.detail);
+				connectFailure();
+			} 
+			else {
+					QB.data.list("Cotrain_Chat",function(err,result)
+					{
+							//alert('list result:'+result);
+							//alert('list err:'+err.detail);
+							var listArr = new Array();
+							for (var entry1 in result) 
+							{
+								if(entry1 == "items")
+								{
+									var item1 = result[entry1];
+									item1.sort(function(a, b) {
+													return a.created_at - b.created_at;
+												});
+									
+									for(var l = 0; l<item1.length;l++)
+									{
+										var obj = item1[l];
+										for(var u = 0;u<localFromUserArr.length;u++)
+										{
+											if(obj.user_id == localFromUserArr[u].FromUserid)
+											{
+												//alert(obj.created_at);
+												//alert(localFromUserArr[u].LastMsgDateTime );
+												if(obj.created_at >localFromUserArr[u].LastMsgDateTime )
+												{
+															
+														var html = '<li><div class="matchesName"><div><img id="sportImg" src="'+obj.Avatar_Path+'"/></div><h2>'+obj.Sender_Name+'</h2><img src="themes/images/message_Active.png" onclick="privateChat1('+obj.user_id+',\''+obj.Sender_Name+'\',\''+obj.Avatar_Path+'\',\''+obj.created_at+'\')"/></div><div class="machesDetails"><P><span>'+obj.message+'</span></P><p><span></span></p></div></li>';	
+														$("#groups").append(html);
+													
+													
+													localFromUserArr.splice(u,1);
+													//alert(localFromUserArr.length);
+												}
+												break;
+												//listArr.push(obj);
+											
+											}
+										}
+									}
+								}
+							 }
+							/* listArr.sort(function(a, b) {
+													return a.created_at - b.created_at;
+												});
+												//alert('list:'+listArr.length);
+										//alert(JSON.stringify(listArr));
+												for (var i=0; i<listArr.length; i++) 
+												{
+													//var rowData = results.rows.item(i);
+													//from_id = rowData.FromUserid;
+													if(listArr[i].created_at >localFromUserArr[i].LastMsgDateTime )
+													{
+														var html = '<li><div class="matchesName"><div><img id="sportImg" src="'+listArr[i].Avatar_Path+'"/></div><h2>'+listArr[i].Sender_Name+'</h2><img src="themes/images/message_Active.png" onclick="privateChat('+listArr[i].user_id+',\''+listArr[i].Sender_Name+'\',\''+listArr[i].Avatar_Path+'\')"/></div><div class="machesDetails"><P><span>'+listArr[i].message+'</span></P><p><span></span></p></div></li>';	
+														$("#groups").append(html);
+													}
+												} */
+				});
+			}
+		});
+				
+				
+});
+function clickGroup(i)
+{
+	//alert('click group:'+i);
+	window.sessionStorage.setItem("groupID", i);
+   window.location = "GroupDetails.html";
+}
+
+function privateChat(msgFromId,msgFromName,msgFromImg)
+{
+				CoTRAINDB.transaction(function (t) 
+				{
+									//SELECT * FROM privateChat WHERE FromUserid ='+from[0]
+					t.executeSql("DELETE FROM privateChat WHERE FromUserid ="+msgFromId, [], function (t, results) 
+					{
+						 window.sessionStorage.setItem("selectedUserId", msgFromId);
+	 					window.sessionStorage.setItem("selectedUserName", msgFromName);
+	 					window.sessionStorage.setItem("selectedUserPhoto",msgFromImg);
+						window.sessionStorage.setItem("backPage","messages.html");
+						window.location = "OneToOneChat.html";
+					});
+				});
+	
+}
+function privateChat1(msgFromId,msgFromName,msgFromImg,msgTime)
+{
+				CoTRAINDB.transaction(function (t) 
+				{
+								
+					t.executeSql("UPDATE privateChatNotify set LastMsgDateTime = "+msgTime+" where FromUserid="+msgFromId, [], function (t, results) 
+					{
+						 window.sessionStorage.setItem("selectedUserId", msgFromId);
+	 					window.sessionStorage.setItem("selectedUserName", msgFromName);
+	 					window.sessionStorage.setItem("selectedUserPhoto",msgFromImg);
+						window.sessionStorage.setItem("backPage","messages.html");
+						window.location = "OneToOneChat.html";
+					});
+				});
+				
+	
+}
+
+function groupChat(qbChatRoom,groupId,i)
+{
+	//alert('group chat:'+qbChatRoom+' and '+i);
+	var group = {"date":groupList[i].Date, "time":groupList[i].Time,"GroupName":groupList[i].GroupName};
+    window.sessionStorage.setItem("sport_usr",JSON.stringify(group));
+	window.sessionStorage.setItem("QBChatRoomName",qbChatRoom);
+	window.sessionStorage.setItem("groupID", groupId);
+	
+	window.location = "GroupChat.html";
+	event.stopPropagation();
+	
+}
+	
+
+</script>
+</body>
+</html>

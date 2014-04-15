@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find Partner</title>
+<link rel="stylesheet" href="themes/smarana.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="themes/style.css" />
+<link rel="stylesheet" href="fonts.css" />
+ <link rel="stylesheet" href="themes/new/style.css"/>
+ <link rel="stylesheet" href="themes/new/style.mobile.css"/>
+
+<script src="themes/jquery.js"></script>
+<script src="themes/jqueryMobile.js"></script>
+<!-- Push Notifications -->
+<script src="js/notify.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/PushNotification.js"></script>
+<!-- cordova -->
+<script type="text/javascript" src="cordova.js"></script>
+<!-- DataBaseService Url -->
+<script src="js/DbServiceUrl.js"></script>
+<!--	QuickBlox chat Services scripts	-->
+<script src="js/QB/quickblox.js"></script>
+<script src="js/QB/strophe.js"></script>
+<script src="js/QB/strophe.muc.js"></script>
+<script src="js/QB/strophe.chatstates.js"></script>
+<script src="js/QB/jquery.timeago.js"></script>
+<script src="js/QB/jquery.scrollTo-min.js"></script>
+<!-- QBVideoChat elements -->
+	<script src="js/QB/adapter.js"></script>
+	<script src="js/QB/qb_videochat_signalling.js"></script>
+	<script src="js/QB/qb_videochat.js"></script>
+	<script src="js/QB/smiles.js"></script>
+	<script src="js/QB/helpers.js"></script>
+<script src ="js/QB/Config.js"></script>
+<script src="js/QB/QBChatService.js"></script>
+<script src="js/QB/qbchatroom.js"></script>
+
+
+<style type="text/css">
+.ui-btn-icon-left {
+	padding-left: 2.5em !important;
+	font-weight: 400 !important;
+}
+.ui-checkbox input, .ui-radio input {
+	position: absolute;
+	left: 20px;
+	top: 50%;
+	width: 0px !important;
+	height: -50px !important;
+	margin: -10px 0 0 0;
+	outline: 0 !important;
+	z-index: -11 !important;
+}
+.SelectSports .ui-btn-icon-left {
+	padding-left: 2.5em !important;
+	
+}
+ol li{
+	padding-top:20px;
+	}
+	p{
+		padding:10px 0px;
+	}
+</style>
+
+</head>
+<body>
+<div data-role="page" data-theme="a">
+  <div class="panel left snap-drawer" data-role="panel" data-position="left" data-display="push" id="panel-01">
+    <ul>
+      <li><a href="javascript:location.replace('./MyProfile.html');" id="UserNam"><img src="themes/images/user.png"></a></li>
+      <li><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/Find.png"> Find Partners</a></li>
+      <li><a href="javascript:location.replace('./MySports.html');"><img src="themes/images/MySports.png">My Sports</a></li>
+      <li><a href="javascript:location.replace('./messages.html');"><img src="themes/images/Messages.png"> Messages</a></li>
+      <br>
+      <br>
+      <br>
+      <li><a href="javascript:location.replace('./Settings.html');"><img src="themes/images/Settings.png">Settings</a></li>
+      <li><a href="javascript:location.replace('./Feedback.html');"><img src="themes/images/FeedBack.png">Feedback</a></li>
+    </ul>
+  </div>
+   <div data-role="header" data-position="inline"> <span class="open left"><a href="#panel-01"><img src="themes/images/open.png"/></a></span> <span class="title">Feedback</span> <span class="open right"><a href="javascript:location.replace('./Slider.html');"><img src="themes/images/SaveIcon.png" /></a></span> </div>
+  <div data-role="content" data-theme="a">
+    <div class="SelectSports">
+      <ol>
+        <li>
+          <p>Did you find CoTrain useful?</p>
+          <input type="radio" name="radio-choice" id="radio-choice-1" value="1" checked="checked" />
+          <label for="radio-choice-1">Yes!</label>
+          <input type="radio" name="radio-choice" id="radio-choice-2" value="3"  />
+          <label for="radio-choice-2">Little</label>
+          <input type="radio" name="radio-choice" id="radio-choice-3" value="4"  />
+          <label for="radio-choice-3">No</label>
+        </li>
+        <li>
+          <p>Would you use CoTrain again?</p>
+          <input type="radio" name="radio-choice1" id="radio-choice-4" value="5" checked="checked" />
+          <label for="radio-choice-4">Yes!</label>
+          <input type="radio" name="radio-choice1" id="radio-choice-5" value="6"  />
+          <label for="radio-choice-5">Maybe</label>
+          <input type="radio" name="radio-choice1" id="radio-choice-6" value="7"  />
+          <label for="radio-choice-6">No</label>
+        </li>
+        <li>
+          <p>Who did you message more?</p>
+          <input type="radio" name="radio-choice2" id="radio-choice-7" value="8" checked="checked" />
+          <label for="radio-choice-7">Individuals</label>
+          <input type="radio" name="radio-choice2" id="radio-choice-8" value="9"  />
+          <label for="radio-choice-8">Group</label>
+        </li>
+        <li>
+          <p>What do you wish the app could do?</p>
+          <fieldset data-role="controlgroup" data-type="vertical">
+            <input type="checkbox" name="checkbox" id="checkbox-1a"  value="10" />
+            <label for="checkbox-1a">List scheduled events & attendees</label>
+            <input type="checkbox" name="checkbox" id="checkbox-2a"  value="11" />
+            <label for="checkbox-2a">List trainers & coaches near you</label>
+            <input type="checkbox" name="checkbox" id="checkbox-3a"  value="12" />
+            <label for="checkbox-3a">Show Sports venues & gyms</label>
+          </fieldset>
+        </li>
+      </ol>
+    </div>
+  </div>
+</div>
+<script>
+$(function()
+{
+	$('<div id="overlay"/>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: $(window).height() + 'px',
+        background: '#CCC url(themes/images/ajax-loader.gif) no-repeat center'
+    }).hide().appendTo('body');
+	
+});
+$(document).ready(function() 
+{
+	$('#overlay').show();
+    var feedbackArr = new Array();
+	userID = localStorage.getItem("cotrain");
+	fbUserName = localStorage.getItem("cotrain"+userID);
+	$("#UserNam").append(fbUserName);
+	$('#overlay').hide();
+});
+	//********************	Submit feedback provided by app user *********************//
+function submitFeedback()
+{
+	feedbackArr = [ ];
+	 $("input[name*=radio-choice]:checked").each(function() 
+	 {
+        var val = $(this).val();
+		if(val ==1 || val == 3 || val == 4)
+		{
+			feedbackArr.push({ QuestionID:"2",AnswerID: $(this).val() });
+		}
+		else if(val ==5 || val == 6 || val == 7)
+		{
+			feedbackArr.push({ QuestionID:"3",AnswerID: $(this).val() });
+		}
+		else if(val ==8 || val == 9)
+		{
+			feedbackArr.push({ QuestionID:"4",AnswerID: $(this).val() });
+		}
+    });
+	$('input:checkbox[name=checkbox]:checked').each(function() 
+    {
+	   feedbackArr.push({ AnswerID: $(this).val() });
+    });
+	
+	var userAnswers = { UserID: userID, Answers: feedbackArr };
+                $.ajax({
+                    type: "POST",
+                    url: coTrainTestAPIURL + "SubmitFeedback",
+                    data: JSON.stringify(userAnswers),
+                    processData: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) 
+					{
+                        //alert('Feedback Submitted Successfully');
+						window.location = "Slider.html";
+                    },
+                    error: function (result) 
+					{
+                        //alert("SubmitFeedback Error:  " + result.status + ' ' + result.statusText);
+                    }
+                });
+	
+}
+</script>
+</body>
+</html>
